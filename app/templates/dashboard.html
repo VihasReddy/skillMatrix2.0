@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container-fluid">
+        <a href="{{ url_for('update_skill') }}">Update Skill</a><br>
+        <a href="{{ url_for('search') }}">Search</a><br>
+        {% for i in update %}
+            <a href="{{ url_for('manager', id=i.employee_id, skill_id=i.skill_id) }}">Update {{ i.employee_id }} with Skill {{i.skill}}</a><br>
+        {% endfor %}
+    </div>
+{% endblock %}
