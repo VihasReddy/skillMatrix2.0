@@ -32,9 +32,15 @@ def dashboard():
         return redirect(url_for('login'))
     q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
     print(type(q))
-    for res in q:
-        print("Update {} for {} skill ".format(res.employee_id, res.skill))
+    if current_user.admin == 'Y':
+        return render_template('dashboard_admin.html')
+    user = Users.query.filter_by(manager_id=current_user.emp_id).first()
+    if user is not None:
+        for res in q:
+            print("Update {} for {} skill ".format(res.employee_id, res.skill))
+        return render_template('dashboard_manager.html', update=q)
     return render_template('dashboard.html', update=q)
+
 
 @app.route('/logout')
 def logout():
