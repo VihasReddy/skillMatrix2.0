@@ -19,15 +19,19 @@ class Users(UserMixin, db.Model):
     manager_id = db.Column(db.String(24))
     practice = db.Column(db.String(24), index=True)
     employees = db.relationship('Skills', backref='author', lazy='dynamic')
+    admin = db.Column(db.Enum('N', 'Y'), index=True, server_default='N')
 
     def __repr__(self):
-        return '<emp_id : {}><name : {}> <manager_id : {}>'.format(self.emp_id, self.username, self.manager_id)
+        return '<emp_id : {}><name : {}> <manager_id : {}> <admin_status: {}>'.format(self.emp_id, self.username, self.manager_id, self.admin)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    def set_admin(self):
+        self.admin = 'Y'
 
 
 class Skills(db.Model):
@@ -45,22 +49,6 @@ class Skills(db.Model):
     def __repr__(self):
         return '<skill_id : {}><Employee ID : {}><skill : {}><exp : {}><emp_rating : {}><manager_rating : {}>'.format(
             self.skill_id, self.employee_id, self.skill, self.skill_exp, self.emp_rating, self.manager_rating)
-
-
-class Admin(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    username = db.Column(db.String(64), index=True, unique=True)
-    email = db.Column(db.String(120), index=True, unique=True)
-    password_hash = db.Column(db.String(128))
-
-    def __repr__(self):
-        return '<id : {}><name : {}>'.format(self.id, self.username)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
 
 
 class SkillInfo(db.Model):

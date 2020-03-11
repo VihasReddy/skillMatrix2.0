@@ -1,0 +1,122 @@
+
+<html>
+    <head>
+        <link rel="stylesheet" href="/static/base.css">
+        
+        <title>Manager Page</title>
+        <style>
+
+
+         .container{
+             max-width: 1170px;
+             width:100%;
+             margin:0 auto;
+
+             display: flex;
+         }
+
+
+        .column{
+             margin: 0 15px 25px;
+             box-shadow: 0 1px 3px rgba(0,0,0,0.12),
+             0 1px 2px rgba(0,0,0,0.24);
+             background: #fff ;
+             border-radius: 5px;
+
+             flex-basis:33%
+         }
+
+         .card{
+             padding: 15px 25px;
+             font-size: small;
+         }
+
+
+
+
+       </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    </head>
+    <body style="background-image: {{url_for('static', filename='res/background.jpg')}}">
+        <nav class="navbar">
+            <div>
+                <a href="/dashboard" class="btn btn-outline-info" role="button">Dashboard</a>
+            </div>
+            
+                <a href="/logout" class="btn btn-outline-info">Logout</a>
+            
+        </nav>
+        <hr>
+            
+            
+            
+        
+
+
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    <h2 align="center" style="padding: 5px 5px;">WELCOME </h2>
+    <div class="container">
+
+    <div class="column">
+        <div class="card">
+        <img src="{{url_for('static', filename='res/update_1.png')}}" align="middle" width=100, height=100>
+        <br>
+        <br>
+        <br>
+        <a href="/update_skill" class="btn btn-outline-info" role="button">Update Skill</a>
+    </div>
+    </div>
+
+    <div class="column">
+        <div class="card">
+            <img src="{{url_for('static', filename='res/search_1.jpg')}}" align="middle" width=100, height=100>
+            <br>
+            <br>
+            <br>
+        <a href="/search" class="btn btn-outline-info" role="button">Search</a>
+    </div>
+    </div>
+
+    <div class="column">
+        <div class="card">
+        <img src="{{url_for('static', filename='res/timeline_1.png')}}" align="middle" width=100, height=100>
+        <br>
+        <br>
+        <br>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info" role="button">Timeline</a>
+    </div>
+    </div>
+
+
+    <div class="column">
+        <div class="card">
+            <img src="{{url_for('static', filename='res/rating.png')}}" align="middle" width=150, height=100>
+
+        <br>
+        <br>
+        <br>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info" role="button">Ratings</a>
+
+
+    </div>
+</div>
+
+            <div class="column">
+        <div class="card">
+            <img src="{{url_for('static', filename='res/edit_1.png')}}" align="middle" width=100, height=100>
+
+        <br>
+        <br>
+        <br>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info" role="button">Edit Profile</a>
+
+
+    </div>
+</div>
+</div>
+
+
+    </body>
+</html>

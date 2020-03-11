@@ -1,5 +1,5 @@
 from app import db
-from app.models import Users, Skills, Admin
+from app.models import Users, Skills
 
 
 # db.session.query(Users).delete()
@@ -13,18 +13,15 @@ from app.models import Users, Skills, Admin
 # u2.set_password('1234')
 # u3.set_password('1234')
 # u4.set_password('1234')
+# a1 = Users(emp_id='admin', username='admin')
+# a1.set_admin()
+# a1.set_password('password')
+# db.session.add(a1)
 # db.session.add(u1)
 # db.session.add(u2)
 # db.session.add(u3)
 # db.session.add(u4)
 # db.session.commit()
-
-
-# a1 = Admin(username='Vihas', email='vihasreddy@enquero.com')
-# a1.set_password('1234')
-# db.session.add(a1)
-# db.session.commit()
-# print("Admin: ",a1)
 
 users = Users.query.all()
 
