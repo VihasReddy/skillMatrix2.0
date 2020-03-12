@@ -2,21 +2,24 @@
     <head>
         <link rel="stylesheet" href="{{ url_for('static', filename='base.css') }}">
         {% if title %}
-        <title>{{ title }} - Microblog</title>
+        <title>{{ title }} - Skill Inventory</title>
         {% else %}
-        <title>Welcome to Microblog</title>
+        <title>Welcome to Skill Inventory</title>
         {% endif %}
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <style>
+    </style>
     </head>
     <body>
         <nav class="navbar">
             <div>
-                <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                <br>
+<!--                <button type="button" class="btn btn-light btn-outline-dark"><a href="{{ url_for('dashboard') }}">Dashboard</a></button>-->
+<!--                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-info active" role="button" aria-pressed="true">Dashboard</a>-->
             </div>
-            {% if current_user.is_anonymous %}
-                <a class="topnav" href="{{ url_for('login') }}">Login</a>
-            {% else %}
-                <a href="{{ url_for('logout') }}">Logout</a>
+            {% if not current_user.is_anonymous %}
+                <a href="{{ url_for('logout') }}" class="btn btn-primary btn-info active" role="button" aria-pressed="true">Logout</a>
             {% endif %}
         </nav>
         <hr>

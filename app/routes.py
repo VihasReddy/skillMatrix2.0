@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 
 from app import app, db
 from app.forms import LoginForm, Details
-
+from app import man_flag
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -73,66 +73,85 @@ def update_skill():
 def search():
     if request.method == 'POST':
         data = dict(request.form)
-        search_res = []
         z = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).all()
         print(data)
         print(z)
         t = int(len(data)/3)
         flag = []
+        ratings_all = []
         for p in range(1, t+1):
             res = []
+            rating = {}
             for i in z:
                 x = Skills.query.filter_by(skill_id=i[0]).first()
                 print(x)
                 if x.manager_rating is not None:
                     if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and (x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + str(p)]):
-                        res.append(x.employee_id)
+                        rating.update({x.employee_id: (x.emp_rating+x.manager_rating)/2})
                 else:
                     if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and x.emp_rating >= int(data['rating' + str(p)]):
-                        res.append(x.employee_id)
+                        rating.update({x.employee_id: x.emp_rating})
                         flag.append(x.employee_id)
-            search_res.append(res)
+            ratings_all.append(rating)
         print(flag)
-        print(search_res)
-        inter = search_res[0]
-        for i in range(0, len(search_res)-1):
+        print(ratings_all)
+        inter = list(ratings_all[0].keys())
+        for i in range(0, len(ratings_all)-1):
             if i == 0:
-                inter = list(set(search_res[i]) & set(search_res[i+1]))
+                inter = list(set(list(ratings_all[i].keys())) & set(list(ratings_all[i+1].keys())))
             else:
-                inter = list(set(inter) & set(search_res[i + 1]))
+                inter = list(set(inter) & set(list(ratings_all[i+1].keys())))
         print(inter)
         final_res = []
         for i in inter:
             x = Users.query.filter_by(emp_id=i).first()
+            avg = 0
+            for p in ratings_all:
+                avg = avg + p[i]
+            avg = avg/len(ratings_all)
             # y=0 -> manager_rating present
             y = 0
             for j in flag:
                 if i == j:
                     y = 1
-                    break;
-            final_res.append((x, y))
+                    break
+            final_res.append((x, y, avg))
         print(final_res)
+        final_res.sort(key=lambda x: float(x[2]), reverse=True)
         return render_template('search.html', title='Search', result=final_res)
     return render_template('search.html', title='Search')
 
 
 @app.route('/manager', methods=['GET', 'POST'])
 def manager():
-    id = request.args.get("id")
-    skill_id = request.args.get("skill_id")
-    print("acb")
-    print(id, skill_id)
-    cur = Skills.query.filter_by(skill_id=skill_id).first()
-    print(cur.emp_rating)
-    name = db.session.query(Users.username).filter_by(emp_id=cur.employee_id).first()
-    print(name[0])
-    if request.method == 'POST':
-        data = dict(request.form)
-        print(data)
-        s = Skills.query.filter_by(skill_id=skill_id).first()
-        s.set_manager_rating(data['manager_rating'])
-        db.session.commit()
-        return redirect('dashboard')
-    return render_template('manager.html', name=name[0], skill=cur.skill, rating=int(cur.emp_rating))
+    global man_flag
+    print(man_flag)
+    q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
+    print(q)
+    # flag = request.form['flag1']
+    # print(flag)
+    for res in q:
+        print("Update {} for {} skill ".format(res.employee_id, res.skill))
+    if request.method == 'POST' and request.form.get("choose_employee") is not None:
+        # flag = request.form['flag']
+        print("prev flag:", man_flag)
+        if man_flag == 0:
+            man_flag = 1
+        else:
+            man_flag = 0
+        print("flag:", man_flag)
+        id = request.form.get("choose_employee")
+        rating = request.form.get("manager_rating")
+        print(id, rating)
+        s = Skills.query.filter_by(skill_id=id).all()
+        if man_flag == 0:
+            s[0].manager_rating = rating
+            print(rating)
+            db.session.commit()
+        print(s)
+        q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
+        name = db.session.query(Users.username).filter_by(emp_id=s[0].employee_id).first()
+        return render_template('manager_rating.html', skills=q, name=name[0], skill=s, flag=man_flag)
+    return render_template('manager_rating.html', skills=q, flag=man_flag)
 
 

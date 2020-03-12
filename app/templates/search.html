@@ -24,6 +24,43 @@
                 console.log(newcell.children[0])
             }
         }
+        function deleteRow(tableID) {
+            try {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var colcnt = 3
+            for(var i=0; i<rowCount; i++) {
+                var row = table.rows[i];
+                var chkbox = row.cells[3].childNodes[0];
+                if(null != chkbox && true === chkbox.checked)
+                {
+                    if(rowCount <= 2)
+                    {
+                        alert("Cannot delete all the rows.");
+                        break;
+                    }
+                    table.deleteRow(i);
+                    rowCount--;
+                    i--;
+                }
+            }
+            var table = document.getElementById(tableID);
+            for (var i = 0, row; row = table.rows[i]; i++) {
+                  row.id="row"+i;
+               for (var j = 0, col; col = row.cells[j]; j++) {
+                 col.id="col"+i;
+                 if(j==0)
+                 {
+                 }
+                 else if(j==1)
+                 {
+                }
+               }
+            }
+            }catch(e) {
+                alert(e);
+            }
+        }
     </script>
     <form action="" method="post" id="form" class="container-fluid">
         <table id="dataTable" class="table table-striped table-bordered">
@@ -32,6 +69,7 @@
                   <th scope="col">Skills</th>
                   <th scope="col">Experience</th>
                   <th scope="col">Rating</th>
+                  <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -58,14 +96,34 @@
                             <option value="5">5</option>
                         </select>
                     </td>
+                    <td id="col_0_0"><input type="checkbox" name="chk"></td>
                 </tr>
             </tbody>
         </table>
-        <input type="button" value="Add Row" onclick="addRow('dataTable')">
+        <input type="button" value="Add Skill" onclick="addRow('dataTable')">
+        <input type="button" value="Delete Skill" onclick="deleteRow('dataTable')">
         <br><br>
     </form>
     <button type="submit" form="form" value="Submit" >Search</button>
     <div class="container-fluid">
+        <div>
+            <br>
+        <select class='select' id="filter_loc" name="rating1">
+            <option value="Bangalore">Bangalore</option>
+            <option value="Hyderabad">Hyderabad</option>
+            <option value="San Jose">San Jose</option>
+            <option value="Pune">Pune</option>
+            <option value="Amsterdam">Amsterdam</option>
+        </select>
+        <select class='select' id="filter_practice" name="rating1">
+            <option value="PowerME">PowerME</option>
+            <option value="Step">Step</option>
+            <option value="Leap">Leap</option>
+            <option value="Atlassian">Atlassian</option>
+            <option value="Cisco">Cisco</option>
+        </select>
+        </div>
+        <br>
          <table id="results" class="table table-striped table-bordered">
             <thead class="thead-light">
                 <tr>
