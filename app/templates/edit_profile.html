@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Edit Profiel</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block content %}
+    <form method="post">
+        <div class="container-fluid">
+            <h3>Edit your profile</h3>
+            <br>
+            <div class="row">
+                <div class="col">
+                    <h6>Username :</h6>
+                    <input type="text" class="form-control" placeholder="First name">
+                </div>
+            </div>
+            <br>
+            <div class="row">
+                 <div class="col">
+                     <h6>Practices :</h6>
+                    <select id="practice" class="form-control">
+                        <option selected>Choose...</option>
+                        <option>Atlassian</option>
+                        <option>PowerME</option>
+                        <option>Step</option>
+                        <option>Leap</option>
+                    </select>
+                 </div>
+            </div>
+            <br>
+            <div class="row">
+                 <div class="col">
+                     <h6>Location :</h6>
+                    <select id="location" class="form-control">
+                        <option selected>Choose...</option>
+                        <option value="Bangalore">Bangalore</option>
+                        <option value="Hyderabad">Hyderabad</option>
+                        <option value="Pune">Pune</option>
+                        <option value="#">USA</option>
+                    </select>
+                 </div>
+            </div>
+            <br>
+            <button type="button" class="btn btn-light"><a href="{{ url_for('dashboard') }}">Submit</a></button>
+        </div>
+    </form>
+{% endblock %}

@@ -5,7 +5,7 @@ from werkzeug.urls import url_parse
 
 from app import app, db
 from app.forms import LoginForm, Details
-from app import man_flag
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -50,23 +50,26 @@ def logout():
 
 @app.route('/update_skill', methods=['GET', 'POST'])
 def update_skill():
+    x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+        Skills.employee_id == current_user.emp_id).all()
+    print(x)
+    skills = []
+    for i in x:
+        skills.append(Skills.query.filter_by(skill_id=i[0]).first())
+    print(skills)
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
     if request.method == 'POST':
         data = dict(request.form)
-        x = int((len(data) - 2) / 3)
+        x = int(len(data) / 3)
         print(data, x)
-        for i in range(1, x + 1):
+        for i in range(1, x+1):
             s = Skills(employee_id=current_user.emp_id, skill=data['skills' + str(i)],
                        skill_exp=data['experience' + str(i)], emp_rating=data['rating' + str(i)])
             db.session.add(s)
             db.session.commit()
-        u = Users.query.filter_by(emp_id=current_user.emp_id).first()
-        u.practice = data['practice']
-        u.location = data['location']
-        db.session.commit()
         return redirect('dashboard')
-    return render_template('update_skill.html', title='Update Skill')
+    return render_template('update_skill.html', title='Update Skill', skills=skills, len=len(skills))
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -124,34 +127,31 @@ def search():
 
 @app.route('/manager', methods=['GET', 'POST'])
 def manager():
-    global man_flag
-    print(man_flag)
-    q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
+    q = Users.query.filter_by(manager_id=current_user.emp_id).all()
     print(q)
-    # flag = request.form['flag1']
-    # print(flag)
-    for res in q:
-        print("Update {} for {} skill ".format(res.employee_id, res.skill))
-    if request.method == 'POST' and request.form.get("choose_employee") is not None:
-        # flag = request.form['flag']
-        print("prev flag:", man_flag)
-        if man_flag == 0:
-            man_flag = 1
+    if request.method == 'POST':
+        data = dict(request.form)
+        print(data)
+        if data["flag"] == "select":
+            u = Users.query.filter_by(emp_id=data['choose_employee']).first()
+            q.insert(0, q.pop(q.index(Users.query.filter_by(emp_id=data['choose_employee']).first())))
+            name = u.username
+            print(u, q)
+            s = Skills.query.filter_by(employee_id=data['choose_employee']).all()
+            return render_template('manager_rating.html', emp=q, skills=s, name=name, flag=1)
         else:
-            man_flag = 0
-        print("flag:", man_flag)
-        id = request.form.get("choose_employee")
-        rating = request.form.get("manager_rating")
-        print(id, rating)
-        s = Skills.query.filter_by(skill_id=id).all()
-        if man_flag == 0:
-            s[0].manager_rating = rating
-            print(rating)
-            db.session.commit()
-        print(s)
-        q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
-        name = db.session.query(Users.username).filter_by(emp_id=s[0].employee_id).first()
-        return render_template('manager_rating.html', skills=q, name=name[0], skill=s, flag=man_flag)
-    return render_template('manager_rating.html', skills=q, flag=man_flag)
+            u = Users.query.filter_by(emp_id=data['choose_employee']).first()
+            name = u.username
+            s = Skills.query.filter_by(employee_id=data['choose_employee']).all()
+            for j in s:
+                rating = data['manager_rating' + str(j.skill_id)]
+                j.manager_rating = rating
+                print(rating)
+                db.session.commit()
+            return render_template('manager_rating.html', emp=q, skills=s, name=name, flag=0)
+    return render_template('manager_rating.html', emp=q, flag=0)
 
 
+@app.route('/edit_profile')
+def edit_profile():
+    return render_template('edit_profile.html')
