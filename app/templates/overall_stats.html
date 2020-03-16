@@ -1,0 +1,55 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+
+        var data = google.visualization.arrayToDataTable({{data|safe}});
+
+        var options = {
+          title: 'People in Technology'
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+        chart.draw(data, options);
+      }
+    </script>
+     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+     <script type="text/javascript">
+       google.charts.load('current', {'packages':['bar']});
+       google.charts.setOnLoadCallback(drawChart);
+ 
+       function drawChart() {
+         var data = google.visualization.arrayToDataTable({{data1|safe}});
+ 
+         var options = {
+           chart: {
+             title: 'Tchnology Rating',
+             subtitle: 'Python, Java, HTML: 2014-17',
+           },
+           bars: 'horizontal' // Required for Material Bar Charts.
+         };
+ 
+         var chart = new google.charts.Bar(document.getElementById('barchart_material'));
+ 
+         chart.draw(data, google.charts.Bar.convertOptions(options));
+       }
+     </script>
+  </head>
+  <body>
+    <div id="piechart" style="width: 900px; height: 500px;"></div>
+        <select class="custom-select my-1 mr-sm-2" id="manager_rating">
+             <option value="1">1</option>
+             <option value="2">2</option>
+             <option value="3">3</option>
+             <option value="4">4</option>
+             <option value="5">5</option>
+        </select>
+    <div id="barchart_material" style="width: 900px; height: 500px;">
+    </div>
+  </body>
+</html>

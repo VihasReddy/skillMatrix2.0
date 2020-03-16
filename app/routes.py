@@ -2,6 +2,7 @@ from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
 from app.models import Users, Skills
 from werkzeug.urls import url_parse
+import json
 
 from app import app, db
 from app.forms import LoginForm, Details
@@ -63,7 +64,7 @@ def update_skill():
         data = dict(request.form)
         x = int(len(data) / 3)
         print(data, x)
-        for i in range(1, x+1):
+        for i in range(1, x + 1):
             s = Skills(employee_id=current_user.emp_id, skill=data['skills' + str(i)],
                        skill_exp=data['experience' + str(i)], emp_rating=data['rating' + str(i)])
             db.session.add(s)
@@ -79,31 +80,33 @@ def search():
         z = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).all()
         print(data)
         print(z)
-        t = int(len(data)/3)
+        t = int(len(data) / 3)
         flag = []
         ratings_all = []
-        for p in range(1, t+1):
+        for p in range(1, t + 1):
             res = []
             rating = {}
             for i in z:
                 x = Skills.query.filter_by(skill_id=i[0]).first()
                 print(x)
                 if x.manager_rating is not None:
-                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and (x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + str(p)]):
-                        rating.update({x.employee_id: (x.emp_rating+x.manager_rating)/2})
+                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and (
+                            x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + str(p)]):
+                        rating.update({x.employee_id: (x.emp_rating + x.manager_rating) / 2})
                 else:
-                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and x.emp_rating >= int(data['rating' + str(p)]):
+                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(
+                            data['experience' + str(p)]) and x.emp_rating >= int(data['rating' + str(p)]):
                         rating.update({x.employee_id: x.emp_rating})
                         flag.append(x.employee_id)
             ratings_all.append(rating)
         print(flag)
         print(ratings_all)
         inter = list(ratings_all[0].keys())
-        for i in range(0, len(ratings_all)-1):
+        for i in range(0, len(ratings_all) - 1):
             if i == 0:
-                inter = list(set(list(ratings_all[i].keys())) & set(list(ratings_all[i+1].keys())))
+                inter = list(set(list(ratings_all[i].keys())) & set(list(ratings_all[i + 1].keys())))
             else:
-                inter = list(set(inter) & set(list(ratings_all[i+1].keys())))
+                inter = list(set(inter) & set(list(ratings_all[i + 1].keys())))
         print(inter)
         final_res = []
         for i in inter:
@@ -111,7 +114,7 @@ def search():
             avg = 0
             for p in ratings_all:
                 avg = avg + p[i]
-            avg = avg/len(ratings_all)
+            avg = avg / len(ratings_all)
             # y=0 -> manager_rating present
             y = 0
             for j in flag:
@@ -137,12 +140,23 @@ def manager():
             q.insert(0, q.pop(q.index(Users.query.filter_by(emp_id=data['choose_employee']).first())))
             name = u.username
             print(u, q)
-            s = Skills.query.filter_by(employee_id=data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+                Skills.employee_id == data['choose_employee']).all()
+            print(x)
+            s = []
+            for i in x:
+                s.append(Skills.query.filter_by(skill_id=i[0]).first())
+            print(s)
             return render_template('manager_rating.html', emp=q, skills=s, name=name, flag=1)
         else:
             u = Users.query.filter_by(emp_id=data['choose_employee']).first()
             name = u.username
-            s = Skills.query.filter_by(employee_id=data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+                Skills.employee_id == data['choose_employee']).all()
+            print(x)
+            s = []
+            for i in x:
+                s.append(Skills.query.filter_by(skill_id=i[0]).first())
             for j in s:
                 rating = data['manager_rating' + str(j.skill_id)]
                 j.manager_rating = rating
@@ -155,3 +169,24 @@ def manager():
 @app.route('/edit_profile')
 def edit_profile():
     return render_template('edit_profile.html')
+
+
+@app.route('/overall_statistics')
+def overall_stats():
+    x = db.session.query(Skills.skill, db.func.count(Skills.employee_id.distinct())).group_by(Skills.skill).all()
+    print(x)
+    data = [['Tech', 'No. of ppl']]
+    for i in x:
+        data.append([i[0], i[1]])
+    print(data)
+    y = db.session.query(Skills.skill, db.func.count(Skills.employee_id.distinct())).group_by(Skills.skill).all()
+
+    data1 = [
+        ['Year', 'Python', 'Java', 'HTML'],
+        ['2014', 4.5, 3.9, 4.2],
+        ['2015', 4.5, 3.7, 4.3],
+        ['2016', 3.9, 4.0, 4.4],
+        ['2017', 3.9, 3.8, 4.5]
+    ]
+    print(json.dumps(data))
+    return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1))
