@@ -8,21 +8,23 @@
         {% endif %}
         <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500&display=swap" rel="stylesheet">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+        <link href="https://fonts.googleapis.com/css?family=Cairo:400,600&display=swap" rel="stylesheet">
         <style>
+        body{
+            /*background-image: url('static/res//skill.png');*/
+            background-size: cover;
+            font-family: 'Cairo', sans-serif;
+        }
     </style>
     </head>
     <body>
         <nav class="navbar">
-            <div>
-                <br>
-<!--                <button type="button" class="btn btn-light btn-outline-dark"><a href="{{ url_for('dashboard') }}">Dashboard</a></button>-->
-<!--                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-info active" role="button" aria-pressed="true">Dashboard</a>-->
-            </div>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light" role="button" aria-pressed="true">Dashboard</a>
             {% if not current_user.is_anonymous %}
-                <a href="{{ url_for('logout') }}" class="btn btn-primary btn-info active" role="button" aria-pressed="true">Logout</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-light" role="button" aria-pressed="true">Logout</a>
             {% endif %}
         </nav>
-        <hr>
+        <br>
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul>

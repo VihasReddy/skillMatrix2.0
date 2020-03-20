@@ -5,8 +5,8 @@ from werkzeug.urls import url_parse
 import json
 
 from app import app, db
-from app.forms import LoginForm, Details
-
+from app.forms import LoginForm
+from sqlalchemy import extract
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -31,14 +31,11 @@ def login():
 def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.emp_id).all()
-    print(type(q))
+    q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.id).all()
     if current_user.admin == 'Y':
         return render_template('dashboard_admin.html')
-    user = Users.query.filter_by(manager_id=current_user.emp_id).first()
+    user = Users.query.filter_by(manager_id=current_user.id).first()
     if user is not None:
-        for res in q:
-            print("Update {} for {} skill ".format(res.employee_id, res.skill))
         return render_template('dashboard_manager.html', update=q)
     return render_template('dashboard.html', update=q)
 
@@ -52,7 +49,7 @@ def logout():
 @app.route('/update_skill', methods=['GET', 'POST'])
 def update_skill():
     x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
-        Skills.employee_id == current_user.emp_id).all()
+        Skills.employee_id == current_user.id).all()
     print(x)
     skills = []
     for i in x:
@@ -62,11 +59,15 @@ def update_skill():
         return redirect(url_for('login'))
     if request.method == 'POST':
         data = dict(request.form)
-        x = int(len(data) / 3)
+        p = []
+        for key in data:
+            if "skills" in key:
+                p.append(key[6:])
+        print(p)
         print(data, x)
-        for i in range(1, x + 1):
-            s = Skills(employee_id=current_user.emp_id, skill=data['skills' + str(i)],
-                       skill_exp=data['experience' + str(i)], emp_rating=data['rating' + str(i)])
+        for i in p:
+            s = Skills(employee_id=current_user.id, skill=data['skills' + i],
+                       skill_exp=data['experience' + i], emp_rating=data['rating' + i])
             db.session.add(s)
             db.session.commit()
         return redirect('dashboard')
@@ -80,22 +81,33 @@ def search():
         z = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).all()
         print(data)
         print(z)
-        t = int(len(data) / 3)
+        t = []
+        for key in data:
+            if "skills" in key:
+                t.append(key[6:])
+        print(t)
         flag = []
         ratings_all = []
-        for p in range(1, t + 1):
-            res = []
+        final_res = []
+        u = Users.query.filter(Users.admin == 'N').all()
+        for i in u:
+            final_res.append((i, 0))
+        print(final_res)
+        for p in t:
+            if data['skills'+p] == "any":
+                return render_template('search.html', title='Search', result=final_res)
+        for p in t:
             rating = {}
             for i in z:
                 x = Skills.query.filter_by(skill_id=i[0]).first()
                 print(x)
                 if x.manager_rating is not None:
-                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(data['experience' + str(p)]) and (
-                            x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + str(p)]):
+                    if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (
+                            x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + p]):
                         rating.update({x.employee_id: (x.emp_rating + x.manager_rating) / 2})
                 else:
-                    if x.skill == data['skills' + str(p)] and x.skill_exp >= int(
-                            data['experience' + str(p)]) and x.emp_rating >= int(data['rating' + str(p)]):
+                    if x.skill == data['skills' + p] and x.skill_exp >= int(
+                            data['experience' + p]) and x.emp_rating >= int(data['rating' + p]):
                         rating.update({x.employee_id: x.emp_rating})
                         flag.append(x.employee_id)
             ratings_all.append(rating)
@@ -110,12 +122,11 @@ def search():
         print(inter)
         final_res = []
         for i in inter:
-            x = Users.query.filter_by(emp_id=i).first()
+            x = Users.query.filter_by(id=i).first()
             avg = 0
             for p in ratings_all:
                 avg = avg + p[i]
             avg = avg / len(ratings_all)
-            # y=0 -> manager_rating present
             y = 0
             for j in flag:
                 if i == j:
@@ -124,24 +135,24 @@ def search():
             final_res.append((x, y, avg))
         print(final_res)
         final_res.sort(key=lambda x: float(x[2]), reverse=True)
+        print(final_res)
         return render_template('search.html', title='Search', result=final_res)
     return render_template('search.html', title='Search')
 
 
-@app.route('/manager', methods=['GET', 'POST'])
-def manager():
-    q = Users.query.filter_by(manager_id=current_user.emp_id).all()
+@app.route('/manager_rating', methods=['GET', 'POST'])
+def manager_rating():
+    q = Users.query.filter_by(manager_id=current_user.id).all()
     print(q)
     if request.method == 'POST':
         data = dict(request.form)
         print(data)
         if data["flag"] == "select":
-            u = Users.query.filter_by(emp_id=data['choose_employee']).first()
-            q.insert(0, q.pop(q.index(Users.query.filter_by(emp_id=data['choose_employee']).first())))
+            u = Users.query.filter_by(id=data['choose_employee']).first()
+            q.insert(0, q.pop(q.index(Users.query.filter_by(id=data['choose_employee']).first())))
             name = u.username
             print(u, q)
-            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
-                Skills.employee_id == data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(Skills.employee_id == data['choose_employee']).all()
             print(x)
             s = []
             for i in x:
@@ -149,10 +160,9 @@ def manager():
             print(s)
             return render_template('manager_rating.html', emp=q, skills=s, name=name, flag=1)
         else:
-            u = Users.query.filter_by(emp_id=data['choose_employee']).first()
+            u = Users.query.filter_by(id=data['choose_employee']).first()
             name = u.username
-            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
-                Skills.employee_id == data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(Skills.employee_id == data['choose_employee']).all()
             print(x)
             s = []
             for i in x:
@@ -166,8 +176,17 @@ def manager():
     return render_template('manager_rating.html', emp=q, flag=0)
 
 
-@app.route('/edit_profile')
+@app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
+    if request.method == 'POST':
+        p = request.form.get("practice")
+        l = request.form.get("location")
+        print(p, l)
+        u = Users.query.filter_by(id=current_user.id).first()
+        u.practice = p
+        u.location = l
+        db.session.commit()
+        return redirect('dashboard')
     return render_template('edit_profile.html')
 
 
@@ -180,7 +199,7 @@ def overall_stats():
         data.append([i[0], i[1]])
     print(data)
     y = db.session.query(Skills.skill, db.func.count(Skills.employee_id.distinct())).group_by(Skills.skill).all()
-
+    print(y)
     data1 = [
         ['Year', 'Python', 'Java', 'HTML'],
         ['2014', 4.5, 3.9, 4.2],
@@ -190,3 +209,22 @@ def overall_stats():
     ]
     print(json.dumps(data))
     return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1))
+
+
+@app.route('/emp_stats/<string:id>', methods=['GET', 'POST'])
+def emp_stats(id):
+    print(id)
+    d = db.session.query(Skills.skill.distinct()).filter_by(employee_id=id).order_by(Skills.skill_id).all()
+    t = db.session.query(extract('year', Skills.timestamp), extract('month', Skills.timestamp),
+                         extract('day', Skills.timestamp),Skills.skill,Skills.emp_rating).filter_by(employee_id=id).order_by(Skills.skill_id).all()
+    res =[['time']]
+    for i in d:
+        res[0].append(i[0])
+    print(res)
+    x = [0]*len(res[0])
+    for i in t:
+        x[0] = (i[0], i[1], i[2])
+        x[res[0].index(i[3])] = i[4]
+        res.append(x[:])
+    print(res)
+    return render_template('emp_stat.html', data=json.dumps(res))

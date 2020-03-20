@@ -1,213 +1,94 @@
-<html>
-    <head>
-        <link rel="stylesheet" href="/static/base.css">
+{% extends "base.html" %}
 
-        <title>Admin Page</title>
-        <style>
-body {
- background-image: url("{{url_for('static', filename='res/background_1.jpg')}}");
- padding-bottom: 1;
-
- background-size: cover;
-}
-
-h2{
-    color: whitesmoke;
-    font-size: 20px;
-}
-
-img{
-  top: 50px;
-  left: 50px;
-}
-
-         .container{
-             max-width: 1170px;
-             width:100%;
-             margin:0 auto;
-
-             display: flex;
-             opacity: 0.85;
-             filter: alpha(opacity=60);
-             
-         }
-
-
-        .column{
-             margin: 0 15px 25px;
-             box-shadow: 0 1px 3px rgba(0,0,0,0.12),
-             0 1px 2px rgba(0,0,0,0.24);
-             background: #fff ;
-             border-radius: 5px;
-             flex-basis:33%
-             
-         }
-
-         .card{
-             padding: 15px 25px;
-             font-size: small;
-         }
-
-         .sidenav {
-  height: 100%;
-  width: 0;
-  position: fixed;
-  z-index: 1;
-  top: 0;
-  left: 0;
-  background-color: #111;
-  overflow-x: hidden;
-  transition: 0.5s;
-  padding-top: 60px;
-  opacity: 0.6;
-filter: alpha(opacity=60);
-}
-
-.sidenav a {
-  padding: 8px 8px 8px 32px;
-  text-decoration: none;
-  font-size: 15px;
-  color: #818181;
-  display: block;
-  transition: 0.3s;
-  
-}
-
-.sidenav a:hover {
-  color: #f1f1f1;
-  
-}
-
-.sidenav .closebtn {
-  position: absolute;
-  top: 0;
-  right: 25px;
-  font-size: 36px;
-  margin-left: 50px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}
-
- </style>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    </head>
-<body>
-        <nav class="navbar">
-            <div>
-                <a href="/dashboard" class="btn btn-outline-info" role="button">Dashboard</a>
-            </div>
-            
-                <a href="/logout" class="btn btn-outline-info">Logout</a>
-            
-        </nav>
-        <hr>
-            
-            
-            
-        
-
-
-        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+{% block content %}
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
- 
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<style>
+        body{
+            background-image: url('static/res/admin.png');
+            background-size: cover;
+            font-family: 'Cairo', sans-serif;
+        }
+        </style>
 
-<div id="mySidenav" class="sidenav">
-    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
-    <a href="#">Add New Employee</a>
-    <a href="#">Add Practices</a>
-    <a href="#">Add Skils</a>
-    <a href="#">Add Locations</a>
-    <a href="#">Admin Access(Not Sure)</a>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
-  
-    <a href="#">Edit Profile</a>
-  </div>
-  
-  <div id="main">
-    <span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; </span>
-    <h2 align="center" style="padding: 5px 5px;">WELCOME </h2>
-    <div class="container">
+        <script>
+            google.charts.load('current', {'packages':['line']});
+            google.charts.setOnLoadCallback(drawChart);
 
-    <div class="column">
-        <div class="card">
-        <img src="{{url_for('static', filename='res/update_1.png')}}"  width=100, height=100>
-        <br>
-        <br>
-        <br>
-        <a href="/update_skill" class="btn btn-outline-info" role="button">Update Skill</a>
-    </div>
-    </div>
+            function drawChart() {
 
-    <div class="column">
-        <div class="card">
-            <img src="{{url_for('static', filename='res/search_1.jpg')}}"  width=100, height=100>
-            <br>
-            <br>
-            <br>
-        <a href="/search" class="btn btn-outline-info" role="button">Search</a>
-    </div>
-    </div>
+              var data = new google.visualization.DataTable();
+              data.addColumn('number', 'Day');
+              data.addColumn('number', 'Sales1');
+              data.addColumn('number', 'Sales2');
+              data.addColumn('number', 'Sales3');
 
-    <div class="column">
-        <div class="card">
-        <img src="{{url_for('static', filename='res/timeline_1.png')}}"  width=100, height=100>
-        <br>
-        <br>
-        <br>
-        <a href="{{ url_for('overall_stats') }}" class="btn btn-outline-info" role="button">Overall Statistics</a>
-    </div>
-    </div>
+              data.addRows([
+                [1,  37.8, 80.8, 41.8],
+                [2,  30.9, 69.5, 32.4],
+                [3,  25.4,   57, 25.7],
+                [4,  11.7, 18.8, 10.5],
+                [5,  11.9, 17.6, 10.4],
+                [6,   8.8, 13.6,  7.7],
+                [7,   7.6, 12.3,  9.6],
+                [8,  12.3, 29.2, 10.6],
+                [9,  16.9, 42.9, 14.8],
+                [10, 12.8, 30.9, 11.6],
+                [11,  5.3,  7.9,  4.7],
+                [12,  6.6,  8.4,  5.2],
+                [13,  4.8,  6.3,  3.6],
+                [14,  4.2,  6.2,  3.4]
+              ]);
 
+              var options = {
+                chart: {
+                  title: 'Box Office Earnings in First Two Weeks of Opening',
+                  subtitle: 'in millions of dollars (USD)'
+                },
+                width: 550,
+                height: 500
+              };
 
+              var chart = new google.charts.Line(document.getElementById('linechart_material'));
+              chart.draw(data, google.charts.Line.convertOptions(options));
+            }
+        </script>
+        <div class="container-fluid" style="padding: 50px;">
+            <div class="row">
+                <div class="col-3">
+                    <div class="card text-center" style="height: 300px;width: 250px;">
+                            <div style="padding-top: 26px;">
+                            </div>
+                            <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                                <image href="/static/res/1.png" height="100%" width="100%" />
+                            </svg>
+                            <div class="card-body">
+                                <a href="{{ url_for('search') }}" class="btn btn-primary">Search</a>
+                            </div>
+                    </div>
+                </div>
+                <div class="col-3">
+                  <div class="card text-center" style="height: 300px;width: 250px;">
+                      <div style="padding-top: 26px;">
+                        </div>
+                      <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                            <image href="/static/res/2.png" height="100%" width="100%" />
+                      </svg>
+                        <div class="card-body">
+                            <a href="{{ url_for('overall_stats') }}" class="btn btn-primary">Timeline</a>
+                        </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="card" style="height: 500px;width: 570px;">
+                        <div id="linechart_material" style="padding-left: 2px;"></div>
+                    </div>
+                </div>
 
-            <div class="column">
-        <div class="card">
-            <img src="{{url_for('static', filename='res/edit_1.png')}}" width=100, height=100>
-
-        <br>
-        <br>
-        <br>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-info" role="button">Ratings</a>
-
-
-    </div>
-</div>
-</div>
-    
-  </div>
-  
-  <script>
-  function openNav() {
-    document.getElementById("mySidenav").style.width = "250px";
-    document.getElementById("main").style.marginLeft = "250px";
-  }
-  
-  function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("main").style.marginLeft= "0";
-  }
-  </script>
-
-
-
-
-
-
-    </body>
-</html>
+              </div>
+        </div>
+{% endblock %}

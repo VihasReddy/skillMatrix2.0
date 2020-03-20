@@ -1,55 +1,57 @@
-<html>
-  <head>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    body{
+        background-image: url("static/res/overall_stats.png");
+    }
+</style>
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {'packages':['corechart']});
       google.charts.setOnLoadCallback(drawChart);
-
       function drawChart() {
-
         var data = google.visualization.arrayToDataTable({{data|safe}});
-
         var options = {
-          title: 'People in Technology'
+            is3D : true,
+            backgroundColor: 'none',
+            fontFamily:'Cario',
+            fillOpacity:0.5,
+            areaOpacity:0.1
         };
-
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
-
         chart.draw(data, options);
       }
     </script>
-     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
      <script type="text/javascript">
        google.charts.load('current', {'packages':['bar']});
        google.charts.setOnLoadCallback(drawChart);
- 
+
        function drawChart() {
          var data = google.visualization.arrayToDataTable({{data1|safe}});
- 
+
          var options = {
            chart: {
-             title: 'Tchnology Rating',
-             subtitle: 'Python, Java, HTML: 2014-17',
+               title: 'Technology Rating',
+               subtitle: 'Python, Java, HTML: 2014-17'
            },
-           bars: 'horizontal' // Required for Material Bar Charts.
+             bars: 'horizontal', // Required for Material Bar Charts.
+             backgroundColor: 'none',
          };
- 
+
          var chart = new google.charts.Bar(document.getElementById('barchart_material'));
- 
+
          chart.draw(data, google.charts.Bar.convertOptions(options));
        }
      </script>
-  </head>
-  <body>
-    <div id="piechart" style="width: 900px; height: 500px;"></div>
-        <select class="custom-select my-1 mr-sm-2" id="manager_rating">
-             <option value="1">1</option>
-             <option value="2">2</option>
-             <option value="3">3</option>
-             <option value="4">4</option>
-             <option value="5">5</option>
-        </select>
-    <div id="barchart_material" style="width: 900px; height: 500px;">
+    <div class="container-fluid">
+        <div style="padding-left: 110px;font-family: QuickSand;color: white"><h3>People in technology</h3></div>
+        <div class="row">
+            <div class="col" id="piechart" style="width: 400px; height: 400px;"></div>
+            <div class="col" id="barchart_material" style="width: 400px; height: 400px;padding-right: 90px;"></div>
+        </div>
+        <br>
     </div>
-  </body>
-</html>
+
+{% endblock %}

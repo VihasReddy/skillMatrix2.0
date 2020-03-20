@@ -1,6 +1,37 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <style>
+        body{
+                background-image: url('static/res/update_skill1.png') ;
+                font-family: 'Cairo', sans-serif;
+        }
+
+
+        thead{
+            background-color: gainsboro;
+        }
+
+        tbody{
+            background-color: white;
+        }
+
+        table.table-bordered{
+        border:1px solid grey;
+      }
+
+        table.table-bordered > thead > tr > th{
+        border:1px solid grey;
+    }
+
+        table.table-bordered > tbody > tr > td{
+        border:1px solid grey;
+    }
+            label{
+            color:white;
+            font-family: 'QuickSand';
+        }
+    </style>
     <script language="javascript">
         function addRow(tableID)
         {
@@ -30,61 +61,44 @@
         }
         function deleteRow(tableID) {
             try {
-            var table = document.getElementById(tableID);
-            var rowCount = table.rows.length;
-            for(var i=0; i<rowCount; i++) {
-                var row = table.rows[i];
-                var chkbox = row.cells[3].childNodes[0];
-                if(null != chkbox && true === chkbox.checked)
-                {
-                    if(rowCount <= 2)
-                    {
-                        alert("Cannot delete all the rows.");
-                        break;
+                var table = document.getElementById(tableID);
+                var rowCount = table.rows.length;
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var chkbox = row.cells[3].childNodes[0];
+                    if (null != chkbox && true === chkbox.checked) {
+                        if (rowCount <= 2) {
+                            alert("Cannot delete all the rows.");
+                            break;
+                        }
+                        table.deleteRow(i);
+                        rowCount--;
+                        i--;
                     }
-                    table.deleteRow(i);
-                    rowCount--;
-                    i--;
                 }
-            }
-            var table = document.getElementById(tableID);
-            for (var i = 0, row; row = table.rows[i]; i++) {
-                  row.id="row"+i;
-               for (var j = 0, col; col = row.cells[j]; j++) {
-                 col.id="col"+i;
-                 if(j==0)
-                 {
-                 }
-                 else if(j==1)
-                 {
+                var table = document.getElementById(tableID);
+                for (var i = 0, row; row = table.rows[i]; i++) {
+                    row.id = "row" + i;
+                    for (var j = 0, col; col = row.cells[j]; j++) {
+                        col.id = "col" + i;
+                        if (j == 0) {
+                        } else if (j == 1) {
+                        }
+                    }
                 }
-               }
-            }
-            }catch(e) {
+            } catch (e) {
                 alert(e);
-            }
-        }
-
-        function submit() {
-            var myText = "Are you sure you want to update?";
-            if (alert (myText))
-            {
-                window.location.href = 'dashboard.html'
-            }
-            else
-            {
-                // They clicked no
             }
         }
     </script>
     <form action="" method="post" id="form" class="container-fluid">
-        <label for="skillsTable">Skills Present: </label>
-        <table id="skillsTable" class="table table-striped table-bordered">
-            <thead class="thead-light">
+            <label id="1" for="skillsTable"><h4>Skills Present:</h4></label>
+        <table id="skillsTable" class="table table-striped table-bordered table-hover">
+            <thead>
                 <tr>
-                  <th scope="col">Skills</th>
-                  <th scope="col">Experience</th>
-                  <th scope="col">Rating</th>
+                  <th scope="col"><h5>Skills</h5></th>
+                  <th scope="col"><h5>Experience</h5></th>
+                  <th scope="col"><h5>Rating</h5></th>
                 </tr>
             </thead>
             <tbody>
@@ -94,7 +108,7 @@
                         {{skills[i].skill}}
                     </td>
                     <td>
-                        {{skills[i].skill_exp}}
+                        {{skills[i].skill_exp}} years
                     </td>
                     <td>
                         {{skills[i].emp_rating}}
@@ -103,20 +117,21 @@
             {% endfor %}
             </tbody>
         </table>
-        <label for="dataTable">Update Skills:</label>
+        <br>
+        <label for="dataTable"><h4>Update Skills:</h4></label>
         <table id="dataTable" class="table table-striped table-bordered">
-            <thead class="thead-light">
+            <thead>
                 <tr>
-                  <th scope="col">Skills</th>
-                  <th scope="col">Experience</th>
-                  <th scope="col">Rating</th>
+                  <th scope="col"><h5>Skills</h5></th>
+                  <th scope="col"><h5>Experience</h5></th>
+                  <th scope="col"><h5>Rating</h5></th>
                     <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
                     <td>
-                        <select class='select' id="skills" name="skills1">
+                        <select class='form-control' id="skills" name="skills1">
                             <option value="Select" selected disabled>Select</option>
                             <option value="Java">Java</option>
                             <option value="Python">Python</option>
@@ -126,10 +141,10 @@
                         </select>
                     </td>
                     <td>
-                        <input type="text" id="experience" name="experience1">
+                        <input type="text" class="form-control" id="experience" name="experience1" value="0" required>
                     </td>
                     <td>
-                        <select class='select' id="rating" name="rating1">
+                        <select class="select form-control"  id="rating" name="rating1">
                             <option value="0" selected>0</option>
                             <option value="1">1</option>
                             <option value="2">2</option>
@@ -142,9 +157,11 @@
                 </tr>
             </tbody>
         </table>
-        <input type="button" value="Add Row" onclick="addRow('dataTable')">
-        <input type="button" value="Delete Skill" onclick="deleteRow('dataTable')">
+        <input type="button" class="btn btn-light" value="Add Skill" onclick="addRow('dataTable')">
+        <input type="button" class="btn btn-light" value="Delete Skill" onclick="deleteRow('dataTable')">
         <br><br>
     </form>
-    <button type="submit" form="form" value="Submit" id="button" onclick="submit()">Submit</button>
+<!--    <button type="submit" form="form" value="Submit" id="button">Submit</button>-->
+    <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-light" form="form" value="Submit" id="button">Submit</button>
+    <br>
 {% endblock %}

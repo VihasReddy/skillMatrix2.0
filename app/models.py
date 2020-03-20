@@ -5,12 +5,12 @@ from datetime import datetime
 
 
 @login.user_loader
-def load_user(emp_id):
-    return Users.query.get(emp_id)
+def load_user(id):
+    return Users.query.get(id)
 
 
 class Users(UserMixin, db.Model):
-    emp_id = db.Column(db.String(24), primary_key=True)
+    id = db.Column(db.String(24), primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     email = db.Column(db.String(120), index=True, unique=True)
     password_hash = db.Column(db.String(128))
@@ -22,7 +22,8 @@ class Users(UserMixin, db.Model):
     admin = db.Column(db.Enum('N', 'Y'), index=True, server_default='N')
 
     def __repr__(self):
-        return '<emp_id : {}><name : {}> <manager_id : {}> <admin_status: {}>'.format(self.emp_id, self.username, self.manager_id, self.admin)
+        return '<emp_id : {}><name : {}> <manager_id : {}> <admin_status: {}>'.format(self.id, self.username,
+                                                                                      self.manager_id, self.admin)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -36,7 +37,7 @@ class Users(UserMixin, db.Model):
 
 class Skills(db.Model):
     skill_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    employee_id = db.Column(db.String(24), db.ForeignKey('users.emp_id'))
+    employee_id = db.Column(db.String(24), db.ForeignKey('users.id'))
     skill = db.Column(db.String(24), index=True)
     skill_exp = db.Column(db.Integer, index=True)
     emp_rating = db.Column(db.Integer, index=True)
@@ -47,16 +48,9 @@ class Skills(db.Model):
         self.manager_rating = rating
 
     def __repr__(self):
-        return '<skill_id : {}><Employee ID : {}><skill : {}><exp : {}><emp_rating : {}><manager_rating : {}>'.format(
-            self.skill_id, self.employee_id, self.skill, self.skill_exp, self.emp_rating, self.manager_rating)
-
-
-class SkillInfo(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    skill_name = db.Column(db.String(24), index=True)
-
-    def __repr__(self):
-        return '<id : {}><name : {}>'.format(self.id, self.skill_name)
+        return '<skill_id : {}><Employee ID : {}><skill : {}><exp : {}><emp_rating : {}><manager_rating : {} ' \
+               '<timestamp : {}>'.format(self.skill_id, self.employee_id, self.skill, self.skill_exp, self.emp_rating,
+                                         self.manager_rating, self.timestamp)
 
 
 class LookupTable(db.Model):

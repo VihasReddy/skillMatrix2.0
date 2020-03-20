@@ -9,15 +9,13 @@
       google.charts.setOnLoadCallback(drawChart);
         
       function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Time', 'Python', 'Java'],
-          [new Date(2013,09,10),4,5],
-          [new Date(2013,09,13),3,4],
-          [new Date(2013,09,16),4,4],
-          [new Date(2013,09,22),5,4],
-          [new Date(2013,09,28),5,5]
-        ]);
-
+        var stats = {{data|safe}}
+        console.log(stats)
+        for (i = 1; i < stats.length; i++) {
+          stats[i][0] = new Date(stats[i][0])
+        }
+        console.log(stats)
+        var data = google.visualization.arrayToDataTable(stats);
         var options = {
           title: 'Company Performance',
           hAxis: {title: 'Time',  titleTextStyle: {color: '#333'}},
