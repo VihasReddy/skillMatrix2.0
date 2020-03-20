@@ -1,12 +1,54 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h1>EMPLOYEE</h1>
-    <div class="container-fluid">
-        <a href="{{ url_for('update_skill') }}">Update Skill</a><br>
-        <a href="{{ url_for('search') }}">Search</a><br>
-        {% for i in update %}
-            <a href="{{ url_for('manager', id=i.employee_id, skill_id=i.skill_id) }}">Update {{ i.employee_id }} with Skill {{i.skill}}</a><br>
-        {% endfor %}
+    <style>
+        body{
+            background-image: url("static/res/emp_page.png");
+        }
+         .container{
+             max-width: 1170px;
+             width:100%;
+             margin:0 auto;
+             display: flex;
+             opacity: 0.9;
+         }
+         .card{
+             padding: 15px 25px;
+             font-size: small;
+         }
+    </style>
+     <div class="container" style="padding: 3px;">
+        <div class="card text-center" style="width: 28rem; margin: 6px; height: 25rem">
+            <svg class="bd-placeholder-img card-img-top" width="150%" height="250px"
+                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <image href="/static/res/5.png" height="100%" width="100%" />
+            </svg>
+            <div class="card-body">
+                <br>
+                <a href="{{ url_for('update_skill') }}" class="btn btn-primary">Update skills</a>
+            </div>
+        </div>
+
+        <div class="card text-center" style="width: 28rem; margin: 6px;">
+            <svg class="bd-placeholder-img card-img-top" width="150%" height="250px"
+                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <image href="/static/res/2.png" height="100%" width="100%" />
+            </svg>
+            <div class="card-body">
+                <br>
+                <a href="{{ url_for('emp_stats', id=id ) }}" class="btn btn-primary">Personal Statistics</a>
+            </div>
+        </div>
+
+        <div class="card text-center" style="width: 28rem; margin: 6px;">
+            <svg class="bd-placeholder-img card-img-top" width="150%" height="250px"
+                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <image href="/static/res/6.png" height="100%" width="100%" />
+            </svg>
+            <div class="card-body">
+                <br>
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary" >Edit Profile</a>
+            </div>
+        </div>
     </div>
 {% endblock %}

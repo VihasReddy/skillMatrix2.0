@@ -161,6 +161,8 @@
                     <th scope="col">Practice</th>
                     <th scope="col">Location</th>
                     <th scope="col">Statistics</th>
+                    <th scope="col">Avg rating</th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -171,10 +173,12 @@
                     <td>{{ i[0].email }}</td>
                     <td>{{ i[0].practice }}</td>
                     <td>{{ i[0].location }}</td>
-                    {% if i[1] == 0 %}
                     <td><a href="{{ url_for('emp_stats', id=i[0].id ) }}">Check Stats</a></td>
+                    <td>{{ i[2] }}</td>
+                    {% if i[1] == 1 %}
+                    <td><a href="#" style="color: red" data-toggle="popover" title="Manager didn't yet rate his skills" data-content="Manager didn't yet rate his skills"><span>&#33;</span></a></td>
                     {% else %}
-                    <td>{{ i[1] }}</td>
+                    <td></td>
                     {% endif %}
                 </tr>
             {% endfor %}

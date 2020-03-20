@@ -5,90 +5,80 @@
         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
         <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-<style>
+        <style>
         body{
             background-image: url('static/res/admin.png');
             background-size: cover;
             font-family: 'Cairo', sans-serif;
         }
+
+        .container{
+             max-width: 1170px;
+             width:100%;
+             margin:0 auto;
+             display: flex;
+             opacity: 0.9;
+         }
+         .card{
+             padding: 15px 25px;
+             font-size: small;
+         }
         </style>
 
-        <script>
-            google.charts.load('current', {'packages':['line']});
-            google.charts.setOnLoadCallback(drawChart);
 
-            function drawChart() {
+        <div class="container" style="padding: 3px;">
 
-              var data = new google.visualization.DataTable();
-              data.addColumn('number', 'Day');
-              data.addColumn('number', 'Sales1');
-              data.addColumn('number', 'Sales2');
-              data.addColumn('number', 'Sales3');
 
-              data.addRows([
-                [1,  37.8, 80.8, 41.8],
-                [2,  30.9, 69.5, 32.4],
-                [3,  25.4,   57, 25.7],
-                [4,  11.7, 18.8, 10.5],
-                [5,  11.9, 17.6, 10.4],
-                [6,   8.8, 13.6,  7.7],
-                [7,   7.6, 12.3,  9.6],
-                [8,  12.3, 29.2, 10.6],
-                [9,  16.9, 42.9, 14.8],
-                [10, 12.8, 30.9, 11.6],
-                [11,  5.3,  7.9,  4.7],
-                [12,  6.6,  8.4,  5.2],
-                [13,  4.8,  6.3,  3.6],
-                [14,  4.2,  6.2,  3.4]
-              ]);
-
-              var options = {
-                chart: {
-                  title: 'Box Office Earnings in First Two Weeks of Opening',
-                  subtitle: 'in millions of dollars (USD)'
-                },
-                width: 550,
-                height: 500
-              };
-
-              var chart = new google.charts.Line(document.getElementById('linechart_material'));
-              chart.draw(data, google.charts.Line.convertOptions(options));
-            }
-        </script>
-        <div class="container-fluid" style="padding: 50px;">
-            <div class="row">
-                <div class="col-3">
-                    <div class="card text-center" style="height: 300px;width: 250px;">
-                            <div style="padding-top: 26px;">
-                            </div>
-                            <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
-                                xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                                <image href="/static/res/1.png" height="100%" width="100%" />
-                            </svg>
-                            <div class="card-body">
-                                <a href="{{ url_for('search') }}" class="btn btn-primary">Search</a>
-                            </div>
-                    </div>
+            <div class="card text-center" style="width: 18rem; margin: 6px;">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <image href="/static/res/1.png" height="100%" width="100%" />
+                </svg>
+                <div class="card-body">
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">Search</a>
                 </div>
-                <div class="col-3">
-                  <div class="card text-center" style="height: 300px;width: 250px;">
-                      <div style="padding-top: 26px;">
-                        </div>
-                      <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
-                            xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                            <image href="/static/res/2.png" height="100%" width="100%" />
-                      </svg>
-                        <div class="card-body">
-                            <a href="{{ url_for('overall_stats') }}" class="btn btn-primary">Timeline</a>
-                        </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="card" style="height: 500px;width: 570px;">
-                        <div id="linechart_material" style="padding-left: 2px;"></div>
-                    </div>
-                </div>
+            </div>
 
-              </div>
+            <div class="card text-center" style="width: 18rem; margin: 6px;">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <image href="/static/res/2.png" height="100%" width="100%" />
+                </svg>
+                <div class="card-body">
+                    <a href="{{ url_for('overall_stats') }}" class="btn btn-primary">Overall Stats</a>
+                </div>
+            </div>
+
+            <div class="card text-center" style="width: 18rem; margin: 6px;">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <image href="/static/res/4.png" height="100%" width="100%" />
+                </svg>
+                <div class="card-body">
+                    <a href="{{ url_for('add_fields') }}" class="btn btn-primary" >Add New Fields</a>
+                </div>
+            </div>
+
+            <div class="card text-center" style="width: 18rem; margin: 6px;">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <image href="/static/res/5.png" height="100%" width="100%" />
+                </svg>
+                <div class="card-body">
+                    <a href="{{ url_for('new_employee') }}" class="btn btn-primary">Add New Users</a>
+                </div>
+            </div>
+
+
+            <div class="card text-center" style="width: 18rem; margin: 6px;">
+                <svg class="bd-placeholder-img card-img-top" width="100%" height="180"
+                    xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <image href="/static/res/6.png" height="100%" width="100%" />
+                </svg>
+                <div class="card-body">
+                    <a href="{{ url_for('edit_emp') }}" class="btn btn-primary" >Edit/Update User Profile</a>
+                </div>
+            </div>
         </div>
+
 {% endblock %}

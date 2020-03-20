@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <style>
+        body{
+            background-image: url("static/res/add_emp.png");
+        }
+    </style>
+    <div class="container">
+        <form action="" method="post" id="form" class="container-fluid">
+
+            <div class="form-group">
+                <label for="skill">Add new technologies : </label>
+                <input type="text" class="form-control" name="skills" id="skill"  required>
+            </div>
+
+          <div class="form-group">
+            <label for="practice">Add new Practices :  </label>
+            <input type="text" class="form-control" name="practice" id="practice" required>
+          </div>
+
+          <div class="form-group">
+            <label for="location">Add New Location : </label>
+            <input type="text" class="form-control" name="location" id="location" required>
+          </div>
+            <br>
+            <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="Submit" id="button">Submit</button>
+            <br>
+        </form>
+    </div>
+{% endblock %}

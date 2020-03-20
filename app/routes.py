@@ -8,6 +8,7 @@ from app import app, db
 from app.forms import LoginForm
 from sqlalchemy import extract
 
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -31,13 +32,12 @@ def login():
 def dashboard():
     if not current_user.is_authenticated:
         return redirect(url_for('login'))
-    q = Skills.query.filter_by(manager_rating=None).join(Users).filter_by(manager_id=current_user.id).all()
     if current_user.admin == 'Y':
         return render_template('dashboard_admin.html')
     user = Users.query.filter_by(manager_id=current_user.id).first()
     if user is not None:
-        return render_template('dashboard_manager.html', update=q)
-    return render_template('dashboard.html', update=q)
+        return render_template('dashboard_manager.html')
+    return render_template('dashboard.html', id=current_user.id)
 
 
 @app.route('/logout')
@@ -88,13 +88,13 @@ def search():
         print(t)
         flag = []
         ratings_all = []
-        final_res = []
-        u = Users.query.filter(Users.admin == 'N').all()
-        for i in u:
-            final_res.append((i, 0))
-        print(final_res)
         for p in t:
             if data['skills'+p] == "any":
+                final_res = []
+                u = Users.query.filter(Users.admin == 'N').all()
+                for i in u:
+                    final_res.append((i, 0))
+                    print(final_res)
                 return render_template('search.html', title='Search', result=final_res)
         for p in t:
             rating = {}
@@ -102,8 +102,10 @@ def search():
                 x = Skills.query.filter_by(skill_id=i[0]).first()
                 print(x)
                 if x.manager_rating is not None:
+                    print("test : ",x.skill_id)
                     if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (
                             x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + p]):
+                        print(x.skill_id)
                         rating.update({x.employee_id: (x.emp_rating + x.manager_rating) / 2})
                 else:
                     if x.skill == data['skills' + p] and x.skill_exp >= int(
@@ -169,7 +171,10 @@ def manager_rating():
                 s.append(Skills.query.filter_by(skill_id=i[0]).first())
             for j in s:
                 rating = data['manager_rating' + str(j.skill_id)]
-                j.manager_rating = rating
+                if rating == "None":
+                    j.manager_rating = None
+                else:
+                    j.manager_rating = rating
                 print(rating)
                 db.session.commit()
             return render_template('manager_rating.html', emp=q, skills=s, name=name, flag=0)
@@ -178,16 +183,18 @@ def manager_rating():
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
+    username = db.session.query(Users.username).filter_by(id=current_user.id).first()
+    print(username)
     if request.method == 'POST':
-        p = request.form.get("practice")
-        l = request.form.get("location")
-        print(p, l)
         u = Users.query.filter_by(id=current_user.id).first()
-        u.practice = p
-        u.location = l
+        new_name = request.form.get('username')
+        new_pass = request.form.get('confirm_pw')
+        print(new_name, new_pass)
+        u.username = new_name
+        u.set_password(new_pass)
         db.session.commit()
         return redirect('dashboard')
-    return render_template('edit_profile.html')
+    return render_template('edit_profile.html', name=username[0])
 
 
 @app.route('/overall_statistics')
@@ -228,3 +235,44 @@ def emp_stats(id):
         res.append(x[:])
     print(res)
     return render_template('emp_stat.html', data=json.dumps(res))
+
+
+@app.route('/new_employee', methods=['GET', 'POST'])
+def new_employee():
+    e = Users.query.filter_by(admin='N').all()
+    if request.method == 'POST':
+        details = dict(request.form)
+        print(details)
+        e = Users(id=details['id'], username=details['username'], email=details['mail'], location=details['location'],
+                  practice=details['practice'], manager_id=details['manager_id'])
+        e.set_password('1234')
+        db.session.add(e)
+        db.session.commit()
+        return redirect('dashboard')
+    return render_template('new_employee.html', emp=e)
+
+
+@app.route('/edit_emp', methods=['GET', 'POST'])
+def edit_emp():
+    users = Users.query.filter_by(admin='N').all()
+    if request.method == "POST":
+        data = dict(request.form)
+        print(data)
+        u = Users.query.filter_by(id=data["id"]).first()
+        if data["flag"] == "select":
+            print(u)
+            return render_template('edit_emp.html', emp=users, flag=1, u=u)
+        if data["flag"] == "submit":
+            u.username = data["username"]
+            u.email = data["mail"]
+            u.location = data["location"]
+            u.practice = data["practice"]
+            u.manager_id = data["manager_id"]
+            db.session.commit()
+        return redirect("dashboard")
+    return render_template('edit_emp.html', emp=users, flag=0)
+
+
+@app.route('/add_fields', methods=['GET', 'POST'])
+def add_fields():
+    return render_template('add_fields.html')
