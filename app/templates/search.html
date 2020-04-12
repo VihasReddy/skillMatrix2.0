@@ -2,16 +2,12 @@
 
 {% block content %}
     <style>
-            body{
-             background-image: url("{{url_for('static', filename='res/search2.png')}}");
-                background-repeat: no-repeat;
-                background-size: cover;
-                font-family: 'Cairo', sans-serif;
+        body{
+            background-image: url("{{url_for('static', filename='res/search2.png')}}");
+            background-repeat: no-repeat;
+            background-size: cover;
+            font-family: 'Cairo', sans-serif;
         }
-
-            table{
-                background-color: aquamarine;
-            }
 
         tbody{
             background-color: white;
@@ -78,6 +74,7 @@
             }
         }
     </script>
+
     <link href="https://code.jquery.com/jquery-3.3.1.js">
     <link href="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js">
     <link href="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js">
@@ -97,11 +94,9 @@
                     <td>
                         <select class="form-control" id="skills" name="skills1" style="width: 120px">
                             <option value="any" selected>Any</option>
-                            <option value="Java">Java</option>
-                            <option value="Python">Python</option>
-                            <option value="Scala">Scala</option>
-                            <option value="Angular">Angular</option>
-                            <option value="JS">JS</option>
+                            {% for i in s %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
                         </select>
                     </td>
                     <td>
@@ -128,40 +123,74 @@
     <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="Submit" id="button">Search</button>
     <br>
         <script>
-            $(document).ready(function() {
-            $('#example thead tr').clone(true).appendTo( '#example thead' );
-            $('#example thead tr:eq(1) th').each( function (i) {
-                var title = $(this).text();
-                $(this).html( '<input type="text" placeholder="Search '+title+'" />' );
-
-                $( 'input', this ).on( 'keyup change', function () {
-                    if ( table.column(i).search() !== this.value ) {
-                        table
-                            .column(i)
-                            .search( this.value )
-                            .draw();
-                    }
-                } );
-            } );
-
-            var table = $('#example').DataTable( {
-                orderCellsTop: true,
-                fixedHeader: true
-            } );
-        } );
-
+        function myFunction() {
+          var table, tr, i;
+          input0 = document.getElementById("id");
+          input1 = document.getElementById("name");
+          input2 = document.getElementById("mail");
+          input3 = document.getElementById("practice");
+          input4 = document.getElementById("loc");
+          // input5 = document.getElementById("stat");
+          input5 = document.getElementById("avgrating");
+          filter0 = input0.value.toUpperCase();
+          filter1 = input1.value.toUpperCase();
+          filter2 = input2.value.toUpperCase();
+          filter3 = input3.value.toUpperCase();
+          filter4 = input4.value.toUpperCase();
+          // filter5 = input5.value.toUpperCase();
+          filter5 = input5.value.toUpperCase();
+          table = document.getElementById("results");
+          tr = table.getElementsByTagName("tr");
+          for (i = 0; i < tr.length; i++) {
+            td0 = tr[i].getElementsByTagName("td")[0];
+            td1 = tr[i].getElementsByTagName("td")[1];
+            td2 = tr[i].getElementsByTagName("td")[2];
+            td3 = tr[i].getElementsByTagName("td")[3];
+            td4 = tr[i].getElementsByTagName("td")[4];
+            td5 = tr[i].getElementsByTagName("td")[5];
+            // td6 = tr[i].getElementsByTagName("td")[6];
+            if (td1 || td0 || td2 || td3 || td4|| td5 ) {
+              txt0 = td0.textContent || td0.innerText;
+              txt1 = td1.textContent || td1.innerText;
+              txt2 = td2.textContent || td2.innerText;
+              txt3 = td3.textContent || td3.innerText;
+              txt4 = td4.textContent || td4.innerText;
+              txt5 = td5.textContent || td5.innerText;
+              // txt6 = td6.textContent || td6.innerText;
+              if (txt0.toUpperCase().indexOf(filter0) > -1 && txt1.toUpperCase().indexOf(filter1) > -1 && txt2.toUpperCase().indexOf(filter2) > -1 && txt3.toUpperCase().indexOf(filter3) > -1 && txt4.toUpperCase().indexOf(filter4) > -1 && txt5.toUpperCase().indexOf(filter5) > -1)
+              {
+                  tr[i].style.display = "";
+              }
+              else
+              {
+                  tr[i].style.display = "none";
+              }
+            }
+          }
+        }
         </script>
         <div class="container-fluid">
          <table id="results" class="table table-bordered">
             <thead class="thead-light">
+                <tr>
+                    <th style="width: 140px;"><input type="text" class="form-control" placeholder="Employee ID" id="id" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th style="width: 160px;"><input type="text" class="form-control" placeholder="Employee Name" id="name" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th style="width: 280px;"><input type="text" class="form-control" placeholder="Employee e-mail" id="mail" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th><input type="text" class="form-control" placeholder="Practice" id="practice" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th><input type="text" class="form-control" placeholder="Location" id="loc" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th><input type="text" class="form-control" placeholder="Avg rating" id="avgrating" onkeyup="myFunction()" style="width: 90%;"></th>
+<!--                    <th><input type="text" class="form-control" placeholder="Avg rating" id="avgrating" onkeyup="myFunction()" style="width: 100%;"></th>-->
+                    <th style="width: 120px;"></th>
+                    <th></th>
+                </tr>
                 <tr>
                     <th scope="col">Employee ID</th>
                     <th scope="col">Employee Name</th>
                     <th scope="col">Employee e-mail</th>
                     <th scope="col">Practice</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Statistics</th>
                     <th scope="col">Avg rating</th>
+                    <th scope="col">Statistics</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -173,17 +202,16 @@
                     <td>{{ i[0].email }}</td>
                     <td>{{ i[0].practice }}</td>
                     <td>{{ i[0].location }}</td>
-                    <td><a href="{{ url_for('emp_stats', id=i[0].id ) }}">Check Stats</a></td>
                     <td>{{ i[2] }}</td>
+                    <td><a href="{{ url_for('emp_stats', id=i[0].id ) }}">Check Stats</a></td>
                     {% if i[1] == 1 %}
                     <td><a href="#" style="color: red" data-toggle="popover" title="Manager didn't yet rate his skills" data-content="Manager didn't yet rate his skills"><span>&#33;</span></a></td>
                     {% else %}
-                    <td></td>
+                    <td>!</td>
                     {% endif %}
                 </tr>
             {% endfor %}
             </tbody>
         </table>
         </div>
-
 {% endblock %}

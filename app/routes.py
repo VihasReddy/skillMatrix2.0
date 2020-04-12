@@ -1,6 +1,6 @@
 from flask import render_template, flash, redirect, url_for, request
 from flask_login import current_user, login_user, logout_user, login_required
-from app.models import Users, Skills
+from app.models import Users, Skills, LookupTable
 from werkzeug.urls import url_parse
 import json
 
@@ -50,7 +50,9 @@ def logout():
 def update_skill():
     x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
         Skills.employee_id == current_user.id).all()
+    sk = LookupTable.query.filter_by(field="skill").all()
     print(x)
+    print(sk)
     skills = []
     for i in x:
         skills.append(Skills.query.filter_by(skill_id=i[0]).first())
@@ -71,11 +73,12 @@ def update_skill():
             db.session.add(s)
             db.session.commit()
         return redirect('dashboard')
-    return render_template('update_skill.html', title='Update Skill', skills=skills, len=len(skills))
+    return render_template('update_skill.html', title='Update Skill', skills=skills, len=len(skills), s=sk)
 
 
 @app.route('/search', methods=['GET', 'POST'])
 def search():
+    sk = LookupTable.query.filter_by(field="skill").all()
     if request.method == 'POST':
         data = dict(request.form)
         z = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).all()
@@ -138,8 +141,8 @@ def search():
         print(final_res)
         final_res.sort(key=lambda x: float(x[2]), reverse=True)
         print(final_res)
-        return render_template('search.html', title='Search', result=final_res)
-    return render_template('search.html', title='Search')
+        return render_template('search.html', result=final_res, s=sk)
+    return render_template('search.html', s=sk)
 
 
 @app.route('/manager_rating', methods=['GET', 'POST'])
@@ -214,6 +217,7 @@ def overall_stats():
         ['2016', 3.9, 4.0, 4.4],
         ['2017', 3.9, 3.8, 4.5]
     ]
+
     print(json.dumps(data))
     return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1))
 
@@ -234,12 +238,22 @@ def emp_stats(id):
         x[res[0].index(i[3])] = i[4]
         res.append(x[:])
     print(res)
-    return render_template('emp_stat.html', data=json.dumps(res))
+    final_res = []
+    for i in range(0, len(res)):
+        if i == len(res)-1:
+            final_res.append(res[i])
+            break
+        if res[i][0] != res[i+1][0]:
+            final_res.append(res[i])
+    print(final_res)
+    return render_template('emp_stat.html', data=json.dumps(final_res))
 
 
 @app.route('/new_employee', methods=['GET', 'POST'])
 def new_employee():
     e = Users.query.filter_by(admin='N').all()
+    loc = LookupTable.query.filter_by(field="location").all()
+    pra = LookupTable.query.filter_by(field="practice").all()
     if request.method == 'POST':
         details = dict(request.form)
         print(details)
@@ -249,30 +263,67 @@ def new_employee():
         db.session.add(e)
         db.session.commit()
         return redirect('dashboard')
-    return render_template('new_employee.html', emp=e)
+    return render_template('new_employee.html', emp=e,l=loc,p=pra)
 
 
 @app.route('/edit_emp', methods=['GET', 'POST'])
 def edit_emp():
     users = Users.query.filter_by(admin='N').all()
+    loc = LookupTable.query.filter_by(field="location").all()
+    pra = LookupTable.query.filter_by(field="practice").all()
     if request.method == "POST":
         data = dict(request.form)
         print(data)
         u = Users.query.filter_by(id=data["id"]).first()
         if data["flag"] == "select":
             print(u)
-            return render_template('edit_emp.html', emp=users, flag=1, u=u)
+            users.insert(0, users.pop(users.index(Users.query.filter_by(id=data['id']).first())))
+            return render_template('edit_emp.html', emp=users, flag=1, u=u, l=loc, p=pra)
         if data["flag"] == "submit":
-            u.username = data["username"]
-            u.email = data["mail"]
             u.location = data["location"]
             u.practice = data["practice"]
             u.manager_id = data["manager_id"]
             db.session.commit()
-        return redirect("dashboard")
+        return render_template('edit_emp.html', emp=users, flag=0)
     return render_template('edit_emp.html', emp=users, flag=0)
 
 
 @app.route('/add_fields', methods=['GET', 'POST'])
 def add_fields():
-    return render_template('add_fields.html')
+    skills = LookupTable.query.filter_by(field="skill").all()
+    loc = LookupTable.query.filter_by(field="location").all()
+    pra = LookupTable.query.filter_by(field="practice").all()
+    print(skills)
+    if request.method == "POST":
+        data = dict(request.form)
+        print(data)
+        if data["flag"] == "skills":
+            db.session.query(LookupTable).filter_by(field="skill").delete()
+            for key in data:
+                if key != "flag":
+                    s = LookupTable(value=data[key], field='skill')
+                    db.session.add(s)
+            db.session.commit()
+            new_skills = LookupTable.query.filter_by(field="skill").all()
+            return render_template('add_fields.html', skills=new_skills, s=len(new_skills), loc=loc, pra=pra, l=len(loc), p=len(pra))
+        if data["flag"] == "location":
+            db.session.query(LookupTable).filter_by(field="location").delete()
+            for key in data:
+                if key != "flag":
+                    s = LookupTable(value=data[key], field='location')
+                    db.session.add(s)
+            db.session.commit()
+            new_loc = LookupTable.query.filter_by(field="location").all()
+            return render_template('add_fields.html', skills=skills, s=len(skills), loc=new_loc, pra=pra,
+                                   l=len(new_loc), p=len(pra))
+        if data["flag"] == "practice":
+            db.session.query(LookupTable).filter_by(field="practice").delete()
+            for key in data:
+                if key != "flag":
+                    s = LookupTable(value=data[key], field='practice')
+                    db.session.add(s)
+            db.session.commit()
+            new_pra = LookupTable.query.filter_by(field="practice").all()
+            return render_template('add_fields.html', skills=skills, s=len(skills), loc=loc, pra=new_pra,
+                                   l=len(loc), p=len(new_pra))
+    return render_template('add_fields.html', skills=skills, loc=loc, pra=pra, s=len(skills), l=len(loc), p=len(pra))

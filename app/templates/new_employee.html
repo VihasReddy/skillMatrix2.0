@@ -3,52 +3,55 @@
 {% block content %}
     <style>
         body{
-            background-image: url('static/res/new_fields.png');
+            background-image: url('static/res/new_fields4.png');
             background-size: cover;
-            font-family: 'Cairo', sans-serif;
+        }
+
+        .container{
+            font-family: 'QuickSand', sans-serif;
+            color: white;
         }
     </style>
     <div class="container">
         <form action="" method="post" id="form" class="container-fluid">
             <div class="form-group">
-                <label for="id">Employee ID</label>
-                <input type="text" class="form-control" name="id" id="id"  required>
+                <label for="id"><h6>Employee ID : </h6></label>
+                <input type="text" class="form-control" name="id" id="id"  style="width: 45%;" required>
             </div>
+            <br>
           <div class="form-group">
-            <label for="name">Employee Name</label>
-            <input type="text" class="form-control" name="username" id="name" required>
+            <label for="name"><h6>Employee Name : </h6></label>
+            <input type="text" class="form-control" name="username" id="name" style="width: 45%;" required>
           </div>
-
+            <br>
           <div class="form-group">
-            <label for="mail">Employee Mail</label>
-            <input type="email" class="form-control" name="mail" id="mail" required>
+            <label for="mail"><h6>Employee Mail : </h6></label>
+            <input type="email" class="form-control" name="mail" id="mail" style="width: 45%;" required>
           </div>
-
+            <br>
             <div class="form-group">
-            <label for="name">Employee Location</label>
-            <select class='form-control' id="location" name="location">
+                <label for="name"><h6>Employee Location : </h6></label>
+            <select class='form-control' id="location" name="location" style="width: 45%;">
                             <option value="Select" selected disabled>Select...</option>
-                            <option value="Bangalore">Bangalore</option>
-                            <option value="Hyderabad">Hyderabad</option>
-                            <option value="Pune">Pune</option>
-                            <option value="America">USA</option>
+                            {% for i in l %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
             </select>
           </div>
-
+            <br>
             <div class="form-group">
-            <label for="mail">Practice</label>
-            <select id="practice" class="form-control" name="practice">
+            <label for="mail"><h6>Practice : </h6></label>
+            <select id="practice" class="form-control" name="practice" style="width: 45%;">
                         <option value="Select" selected disabled>Select...</option>
-                        <option value="Atlassian">Atlassian</option>
-                        <option value="PowerME">PowerME</option>
-                        <option value="Step">Step</option>
-                        <option value="Leap">Leap</option>
+                            {% for i in p %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
             </select>
           </div>
-
+            <br>
            <div class="form-group">
-            <label for="manager_id">Employee's Manager ID</label>
-                <input type="text" class="form-control" name="manager_id" id="manager_id" required list="managers" />
+            <label for="manager_id"><h6>Employee's Manager ID : </h6></label>
+                <input type="text" class="form-control" name="manager_id" id="manager_id" required style="width: 45%;" list="managers" />
                     <datalist id="managers">
                 {% for i in emp %}
                      <option value={{i.id}}>{{ i.id }} - {{ i.username }}</option>
@@ -56,7 +59,7 @@
                     </datalist>
           </div>
             <br>
-            <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="Submit" id="button">Submit</button>
+            <button style="margin-left:200px;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="Submit" id="button">Submit</button>
             <br>
         </form>
     </div>

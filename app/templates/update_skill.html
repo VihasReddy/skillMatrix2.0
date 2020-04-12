@@ -133,11 +133,9 @@
                     <td>
                         <select class='form-control' id="skills" name="skills1">
                             <option value="Select" selected disabled>Select</option>
-                            <option value="Java">Java</option>
-                            <option value="Python">Python</option>
-                            <option value="Scala">Scala</option>
-                            <option value="Angular">Angular</option>
-                            <option value="JS">JS</option>
+                            {% for i in s %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
                         </select>
                     </td>
                     <td>

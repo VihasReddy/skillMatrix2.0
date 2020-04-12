@@ -1,5 +1,5 @@
 from app import db
-from app.models import Users, Skills
+from app.models import Users, Skills, LookupTable
 
 
 # db.session.query(Users).delete()
@@ -33,9 +33,31 @@ skills = Skills.query.all()
 for i in skills:
     print(i)
 
-s = Skills.query.filter_by(manager_rating=None).all()
-print("\n\n test:")
-for i in s:
+# db.session.query(LookupTable).delete()
+# db.session.commit()
+#
+# s1 = LookupTable(value='Python', field='skill')
+# s2 = LookupTable(value='Scala', field='skill')
+# s3 = LookupTable(value='JS', field='skill')
+# s4 = LookupTable(value='Communication', field='skill')
+# s5 = LookupTable(value='Java', field='skill')
+# l1 = LookupTable(value='Hyderabad', field='location')
+# l2 = LookupTable(value='Bangalore', field='location')
+# l3 = LookupTable(value='California', field='location')
+# db.session.add(s1)
+# db.session.add(s2)
+# db.session.add(s3)
+# db.session.add(s4)
+# db.session.add(s5)
+# db.session.add(l1)
+# db.session.add(l2)
+# db.session.add(l3)
+
+db.session.commit()
+
+l = LookupTable.query.all()
+
+for i in l:
     print(i)
 
 # current_user = Users.query.filter_by(id="T0100").first()
