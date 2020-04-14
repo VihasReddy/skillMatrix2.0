@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" rel="stylesheet">
     <style>
         body{
             background-image: url("{{url_for('static', filename='res/search2.png')}}");
@@ -30,9 +31,15 @@
                 else if(i==1){
                     newcell.children[0].setAttribute("name","experience"+rowCount)
                     }
-                else{
+                else if(i==2){
                     newcell.children[0].setAttribute("name","rating"+rowCount)
                     }
+                else if(i==3){
+                    newcell.children[0].setAttribute("name","interest"+rowCount)
+                    }
+                else{
+                    newcell.children[0].setAttribute("name","chk"+rowCount)
+                }
                 console.log(newcell.children[0])
             }
         }
@@ -75,6 +82,7 @@
         }
     </script>
 
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
     <link href="https://code.jquery.com/jquery-3.3.1.js">
     <link href="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js">
     <link href="https://cdn.datatables.net/fixedheader/3.1.6/js/dataTables.fixedHeader.min.js">
@@ -85,7 +93,8 @@
                 <tr>
                   <th scope="col"><h5>Skills</h5></th>
                   <th scope="col"><h5>Experience</h5></th>
-                  <th scope="col"><h5>Rating</h5></th>
+                  <th scope="col"><h5>Rating(on a scale of 10)</h5></th>
+                  <th scope="col"><h5>Interest(on a scale of 5)</h5></th>
                   <th scope="col"></th>
                 </tr>
             </thead>
@@ -104,6 +113,14 @@
                     </td>
                     <td>
                         <select class="form-control" id="rating" name="rating1" style="width: 80px">
+                            <option value="0" selected>0</option>
+                            {% for i in range(1,11) %}
+                            <option value='{{ i }}'>{{i}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td>
+                        <select class="form-control" id="interest" name="interest1" style="width: 80px">
                             <option value="1">1</option>
                             <option value="2">2</option>
                             <option value="3">3</option>
@@ -115,6 +132,7 @@
                 </tr>
             </tbody>
         </table>
+
         </div>
         <input style="margin-top: 10px;" type="button" class="btn btn-light" value="Add Skill" onclick="addRow('dataTable')">
         <input style="margin-top: 10px;" type="button" class="btn btn-light" value="Delete Skill" onclick="deleteRow('dataTable')">
@@ -131,14 +149,14 @@
           input3 = document.getElementById("practice");
           input4 = document.getElementById("loc");
           // input5 = document.getElementById("stat");
-          input5 = document.getElementById("avgrating");
+          // input5 = document.getElementById("avgrating");
           filter0 = input0.value.toUpperCase();
           filter1 = input1.value.toUpperCase();
           filter2 = input2.value.toUpperCase();
           filter3 = input3.value.toUpperCase();
           filter4 = input4.value.toUpperCase();
           // filter5 = input5.value.toUpperCase();
-          filter5 = input5.value.toUpperCase();
+          // filter5 = input5.value.toUpperCase();
           table = document.getElementById("results");
           tr = table.getElementsByTagName("tr");
           for (i = 0; i < tr.length; i++) {
@@ -147,7 +165,7 @@
             td2 = tr[i].getElementsByTagName("td")[2];
             td3 = tr[i].getElementsByTagName("td")[3];
             td4 = tr[i].getElementsByTagName("td")[4];
-            td5 = tr[i].getElementsByTagName("td")[5];
+            // td5 = tr[i].getElementsByTagName("td")[5];
             // td6 = tr[i].getElementsByTagName("td")[6];
             if (td1 || td0 || td2 || td3 || td4|| td5 ) {
               txt0 = td0.textContent || td0.innerText;
@@ -155,7 +173,7 @@
               txt2 = td2.textContent || td2.innerText;
               txt3 = td3.textContent || td3.innerText;
               txt4 = td4.textContent || td4.innerText;
-              txt5 = td5.textContent || td5.innerText;
+              // txt5 = td5.textContent || td5.innerText;
               // txt6 = td6.textContent || td6.innerText;
               if (txt0.toUpperCase().indexOf(filter0) > -1 && txt1.toUpperCase().indexOf(filter1) > -1 && txt2.toUpperCase().indexOf(filter2) > -1 && txt3.toUpperCase().indexOf(filter3) > -1 && txt4.toUpperCase().indexOf(filter4) > -1 && txt5.toUpperCase().indexOf(filter5) > -1)
               {
@@ -173,15 +191,17 @@
          <table id="results" class="table table-bordered">
             <thead class="thead-light">
                 <tr>
-                    <th style="width: 140px;"><input type="text" class="form-control" placeholder="Employee ID" id="id" onkeyup="myFunction()" style="width: 100%;"></th>
-                    <th style="width: 160px;"><input type="text" class="form-control" placeholder="Employee Name" id="name" onkeyup="myFunction()" style="width: 100%;"></th>
-                    <th style="width: 280px;"><input type="text" class="form-control" placeholder="Employee e-mail" id="mail" onkeyup="myFunction()" style="width: 100%;"></th>
-                    <th><input type="text" class="form-control" placeholder="Practice" id="practice" onkeyup="myFunction()" style="width: 100%;"></th>
-                    <th><input type="text" class="form-control" placeholder="Location" id="loc" onkeyup="myFunction()" style="width: 100%;"></th>
-                    <th><input type="text" class="form-control" placeholder="Avg rating" id="avgrating" onkeyup="myFunction()" style="width: 90%;"></th>
+                    <th style="width: 140px;"><input type="text" class="form-control" placeholder="Employee ID" id="id" data-toggle="tooltip" data-placement="top" title="Filter by Employee ID's" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th style="width: 160px;"><input type="text" class="form-control" placeholder="Employee Name" id="name" data-toggle="tooltip" data-placement="top" title="Filter by Employee Name"onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th style="width: 280px;"><input type="text" class="form-control" placeholder="Employee e-mail" id="mail" data-toggle="tooltip" data-placement="top" title="Filter by Employee mail" onkeyup="myFunction()" style="width: 100%;"></th>
+                    <th><input type="text" class="form-control" placeholder="Practice" id="practice" onkeyup="myFunction()" data-toggle="tooltip" data-placement="top" title="Filter by practice"style="width: 100%;"></th>
+                    <th><input type="text" class="form-control" placeholder="Location" id="loc" onkeyup="myFunction()" data-toggle="tooltip" data-placement="top" title="Filter by location" style="width: 100%;"></th>
+<!--                    <th><input type="text" class="form-control" placeholder="Avg rating" id="avgrating" onkeyup="myFunction()" data-toggle="tooltip" data-placement="top" title="Filter by Rating" style="width: 90%;"></th>-->
 <!--                    <th><input type="text" class="form-control" placeholder="Avg rating" id="avgrating" onkeyup="myFunction()" style="width: 100%;"></th>-->
-                    <th style="width: 120px;"></th>
                     <th></th>
+                    <th></th>
+                    <th></th>
+                    <th style="width: 120px;"><img src="../static/res/funnel.png" style="width: 23px; height: 27px; padding-bottom: 4px;"></th>
                 </tr>
                 <tr>
                     <th scope="col">Employee ID</th>
@@ -189,9 +209,10 @@
                     <th scope="col">Employee e-mail</th>
                     <th scope="col">Practice</th>
                     <th scope="col">Location</th>
-                    <th scope="col">Avg rating</th>
+                    <th scope="col">Industry Experience</th>
+                    <th scope="col">Avg Interest(on a scale of 5)</th>
+                    <th scope="col">Avg Rating(on a scale of 10)</th>
                     <th scope="col">Statistics</th>
-                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -202,13 +223,14 @@
                     <td>{{ i[0].email }}</td>
                     <td>{{ i[0].practice }}</td>
                     <td>{{ i[0].location }}</td>
+                    <td>{{ i[0].overall_exp }}</td>
                     <td>{{ i[2] }}</td>
-                    <td><a href="{{ url_for('emp_stats', id=i[0].id ) }}">Check Stats</a></td>
                     {% if i[1] == 1 %}
-                    <td><a href="#" style="color: red" data-toggle="popover" title="Manager didn't yet rate his skills" data-content="Manager didn't yet rate his skills"><span>&#33;</span></a></td>
+                    <td>{{ i[3] }}  ( <a href="#" style="color: red" data-toggle="popover" title="Manager didn't yet rate his skills" data-content="Manager didn't yet rate his skills"><span>&#33;</span></a> )</td>
                     {% else %}
-                    <td>!</td>
+                    <td>{{ i[3] }}</td>
                     {% endif %}
+                    <td><a href="{{ url_for('emp_stats', id=i[0].id ) }}">Check Stats</a></td>
                 </tr>
             {% endfor %}
             </tbody>

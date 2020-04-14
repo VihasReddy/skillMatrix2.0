@@ -42,10 +42,14 @@ class Skills(db.Model):
     skill_exp = db.Column(db.Integer, index=True)
     emp_rating = db.Column(db.Integer, index=True)
     manager_rating = db.Column(db.Integer, index=True)
+    skill_interest = db.Column(db.Integer, index=True)
     timestamp = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     def set_manager_rating(self, rating):
         self.manager_rating = rating
+
+    def get_overall_rating(self):
+        return 0.4*self.emp_rating + 0.6*self.manager_rating
 
     def __repr__(self):
         return '<skill_id : {}><Employee ID : {}><skill : {}><exp : {}><emp_rating : {}><manager_rating : {} ' \

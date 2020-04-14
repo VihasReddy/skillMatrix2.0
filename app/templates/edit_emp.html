@@ -3,7 +3,7 @@
 {% block content %}
     <style>
         body{
-            background-image: url("static/res/update_emp.png");
+            background-image: url("static/res/edit_emp2.png");
         }
 
         .container-fluid{
@@ -21,30 +21,31 @@
                 {% endfor %}
             </select>
        <button type="submit" form="form" class="btn btn-primary" value="select" name="flag">select</button>
+
             {% if flag == 1 %}
             <div class="form-group">
             <label>Employee Location</label>
-            <select class='form-control' id="location" name="location">
-                <option value={{u.location}} selected>{{u.location}}</option>
-                {% for i in l %}
-                        <option value='{{ i.value }}'>{{i.value}}</option>
-                {% endfor %}
+            <select class='form-control' id="location" name="location" style="width: 30%">
+                            <option value={{u.location}} selected>{{u.location}}</option>
+                            {% for i in l %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
             </select>
           </div>
 
             <div class="form-group">
             <label>Practice</label>
-            <select id="practice" class="form-control" name="practice">
-                <option value={{u.practice}} selected>{{u.practice}}</option>
-                {% for i in p %}
-                    <option value='{{ i.value }}'>{{i.value}}</option>
-                {% endfor %}
+            <select id="practice" class="form-control" name="practice" style="width: 30%">
+                        <option value={{u.practice}} selected>{{u.practice}}</option>
+                            {% for i in p %}
+                            <option value='{{ i.value }}'>{{i.value}}</option>
+                            {% endfor %}
             </select>
           </div>
 
            <div class="form-group">
             <label for="manager_id">Employee's Manager ID</label>
-                <input type="text" class="form-control" name="manager_id" id="manager_id" value={{u.manager_id}} required list="managers" />
+                <input type="text" class="form-control" name="manager_id" id="manager_id" value={{u.manager_id}} required style="width: 30%" list="managers" />
                     <datalist id="managers">
                 {% for i in emp %}
                      <option value={{i.id}}>{{ i.id }} - {{ i.username }}</option>
@@ -52,7 +53,7 @@
                     </datalist>
           </div>
             <br>
-            <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="submit" name="flag" id="button">Submit</button>
+            <button style="margin-left:130px;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="submit" name="flag" id="button">Submit</button>
             <br>
             {% endif %}
     </form>

@@ -69,7 +69,7 @@ def update_skill():
         print(data, x)
         for i in p:
             s = Skills(employee_id=current_user.id, skill=data['skills' + i],
-                       skill_exp=data['experience' + i], emp_rating=data['rating' + i])
+                       skill_exp=data['experience' + i], emp_rating=data['rating' + i], skill_interest=data['interest' + i])
             db.session.add(s)
             db.session.commit()
         return redirect('dashboard')
@@ -92,28 +92,27 @@ def search():
         flag = []
         ratings_all = []
         for p in t:
-            if data['skills'+p] == "any":
+            if data['skills' + p] == "any":
                 final_res = []
                 u = Users.query.filter(Users.admin == 'N').all()
                 for i in u:
                     final_res.append((i, 0))
                     print(final_res)
-                return render_template('search.html', title='Search', result=final_res)
+                return render_template('search.html', title='Search', result=final_res, s=sk)
         for p in t:
             rating = {}
             for i in z:
                 x = Skills.query.filter_by(skill_id=i[0]).first()
                 print(x)
                 if x.manager_rating is not None:
-                    print("test : ",x.skill_id)
-                    if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (
-                            x.emp_rating + x.manager_rating) / 2 >= int(data['rating' + p]):
+                    print("test : ", x.skill_id)
+                    if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (0.4*x.emp_rating + 0.6*x.manager_rating) >= int(data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
                         print(x.skill_id)
                         rating.update({x.employee_id: (x.emp_rating + x.manager_rating) / 2})
                 else:
                     if x.skill == data['skills' + p] and x.skill_exp >= int(
-                            data['experience' + p]) and x.emp_rating >= int(data['rating' + p]):
-                        rating.update({x.employee_id: x.emp_rating})
+                            data['experience' + p]) and x.emp_rating >= int(data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
+                        rating.update({x.employee_id: (x.emp_rating, x.skill_interest)})
                         flag.append(x.employee_id)
             ratings_all.append(rating)
         print(flag)
@@ -126,18 +125,22 @@ def search():
                 inter = list(set(inter) & set(list(ratings_all[i + 1].keys())))
         print(inter)
         final_res = []
+        print(ratings_all)
         for i in inter:
             x = Users.query.filter_by(id=i).first()
-            avg = 0
+            r_avg = 0
+            i_avg = 0
             for p in ratings_all:
-                avg = avg + p[i]
-            avg = avg / len(ratings_all)
+                r_avg = r_avg + p[i][0]
+                i_avg = i_avg + p[i][1]
+            r_avg = r_avg / len(ratings_all)
+            i_avg = i_avg / len(ratings_all)
             y = 0
             for j in flag:
                 if i == j:
                     y = 1
                     break
-            final_res.append((x, y, avg))
+            final_res.append((x, y, i_avg, r_avg))
         print(final_res)
         final_res.sort(key=lambda x: float(x[2]), reverse=True)
         print(final_res)
@@ -157,7 +160,8 @@ def manager_rating():
             q.insert(0, q.pop(q.index(Users.query.filter_by(id=data['choose_employee']).first())))
             name = u.username
             print(u, q)
-            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(Skills.employee_id == data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+                Skills.employee_id == data['choose_employee']).all()
             print(x)
             s = []
             for i in x:
@@ -167,7 +171,8 @@ def manager_rating():
         else:
             u = Users.query.filter_by(id=data['choose_employee']).first()
             name = u.username
-            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(Skills.employee_id == data['choose_employee']).all()
+            x = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+                Skills.employee_id == data['choose_employee']).all()
             print(x)
             s = []
             for i in x:
@@ -187,7 +192,8 @@ def manager_rating():
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
     username = db.session.query(Users.username).filter_by(id=current_user.id).first()
-    print(username)
+    location = db.session.query(Users.location).filter_by(id=current_user.id).first()
+    print(username, location)
     if request.method == 'POST':
         u = Users.query.filter_by(id=current_user.id).first()
         new_name = request.form.get('username')
@@ -197,7 +203,7 @@ def edit_profile():
         u.set_password(new_pass)
         db.session.commit()
         return redirect('dashboard')
-    return render_template('edit_profile.html', name=username[0])
+    return render_template('edit_profile.html', name=username[0], loc=location[0])
 
 
 @app.route('/overall_statistics')
@@ -217,9 +223,23 @@ def overall_stats():
         ['2016', 3.9, 4.0, 4.4],
         ['2017', 3.9, 3.8, 4.5]
     ]
+    loc = [['Task', 'Hours per Day'],
+           ['Work', 11],
+           ['Eat', 2],
+           ['Commute', 2],
+           ['Watch TV', 2],
+           ['Sleep', 7]]
 
-    print(json.dumps(data))
-    return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1))
+    prac = [
+        ["Element", "Density", { 'role': "style" } ],
+        ["Copper", 8.94, "#b87333"],
+        ["Silver", 10.49, "silver"],
+        ["Gold", 19.30, "gold"],
+        ["Platinum", 21.45, "color: #e5e4e2"]
+      ]
+    print(json.dumps(data1))
+    return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1), loc=json.dumps(loc),
+                           prac=json.dumps(prac))
 
 
 @app.route('/emp_stats/<string:id>', methods=['GET', 'POST'])
@@ -227,23 +247,28 @@ def emp_stats(id):
     print(id)
     d = db.session.query(Skills.skill.distinct()).filter_by(employee_id=id).order_by(Skills.skill_id).all()
     t = db.session.query(extract('year', Skills.timestamp), extract('month', Skills.timestamp),
-                         extract('day', Skills.timestamp),Skills.skill,Skills.emp_rating).filter_by(employee_id=id).order_by(Skills.skill_id).all()
-    res =[['time']]
+                         extract('day', Skills.timestamp), Skills.skill, Skills.emp_rating, Skills.manager_rating).filter_by(
+        employee_id=id).order_by(Skills.skill_id).all()
+    res = [['time']]
     for i in d:
         res[0].append(i[0])
     print(res)
-    x = [0]*len(res[0])
+    x = [0] * len(res[0])
+    print(t)
     for i in t:
         x[0] = (i[0], i[1], i[2])
-        x[res[0].index(i[3])] = i[4]
+        if i[5] is not None:
+            x[res[0].index(i[3])] = 0.4*i[4]+0.6*i[5]
+        else:
+            x[res[0].index(i[3])] = i[4]
         res.append(x[:])
     print(res)
     final_res = []
     for i in range(0, len(res)):
-        if i == len(res)-1:
+        if i == len(res) - 1:
             final_res.append(res[i])
             break
-        if res[i][0] != res[i+1][0]:
+        if res[i][0] != res[i + 1][0]:
             final_res.append(res[i])
     print(final_res)
     return render_template('emp_stat.html', data=json.dumps(final_res))
@@ -262,8 +287,8 @@ def new_employee():
         e.set_password('1234')
         db.session.add(e)
         db.session.commit()
-        return redirect('dashboard')
-    return render_template('new_employee.html', emp=e,l=loc,p=pra)
+        return render_template('new_employee.html', emp=e, l=loc, p=pra)
+    return render_template('new_employee.html', emp=e, l=loc, p=pra)
 
 
 @app.route('/edit_emp', methods=['GET', 'POST'])
@@ -305,7 +330,8 @@ def add_fields():
                     db.session.add(s)
             db.session.commit()
             new_skills = LookupTable.query.filter_by(field="skill").all()
-            return render_template('add_fields.html', skills=new_skills, s=len(new_skills), loc=loc, pra=pra, l=len(loc), p=len(pra))
+            return render_template('add_fields.html', skills=new_skills, s=len(new_skills), loc=loc, pra=pra,
+                                   l=len(loc), p=len(pra))
         if data["flag"] == "location":
             db.session.query(LookupTable).filter_by(field="location").delete()
             for key in data:
