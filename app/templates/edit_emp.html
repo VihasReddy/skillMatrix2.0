@@ -3,7 +3,7 @@
 {% block content %}
     <style>
         body{
-            background-image: url("static/res/edit_emp2.png");
+            background-image: url("static/res/edit_emp1.png");
         }
 
         .container-fluid{
@@ -21,9 +21,9 @@
                 {% endfor %}
             </select>
        <button type="submit" form="form" class="btn btn-primary" value="select" name="flag">select</button>
-
             {% if flag == 1 %}
             <div class="form-group">
+                <br>
             <label>Employee Location</label>
             <select class='form-control' id="location" name="location" style="width: 30%">
                             <option value={{u.location}} selected>{{u.location}}</option>
@@ -52,11 +52,31 @@
                 {% endfor %}
                     </datalist>
           </div>
-            <br>
-            <button style="margin-left:130px;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="submit" name="flag" id="button">Submit</button>
-            <br>
-            {% endif %}
+<!--            <button style="margin-left:130px;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" form="form" value="submit" name="flag" id="button">Submit</button>-->
+
     </form>
+        <button style="margin-left:130px;display:block;padding-top: 5px;" type="submit" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" name="flag" >Submit</button>
+        {% endif %}
+    </div>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Confirmation message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure about the changes?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="form" value="Submit" id="button" name="flag">Save changes</button>
+          </div>
+        </div>
+      </div>
     </div>
 {% endblock %}
 

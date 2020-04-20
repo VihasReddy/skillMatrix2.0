@@ -1,35 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <style>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
+<style>
         body{
                 background-image: url('static/res/update_skill1.png') ;
-                font-family: 'Cairo', sans-serif;
+               font-family: 'Rubik', sans-serif;
+        }
+
+        #dataTable{
+            background-image: url("static/res/bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 10px;
         }
 
         #skillsTable{
-            border-radius: 20%;
+            background-image: url("static/res/bg.jpg");
+            background-repeat: no-repeat;
+            background-size: cover;
+            border-radius: 10px;
         }
 
-        thead{
-            background-color: gainsboro;
-        }
-
-        tbody{
-            background-color: white;
-        }
-
-        table.table-bordered{
-        border:1px solid grey;
-      }
-
-        table.table-bordered > thead > tr > th{
-        border:1px solid grey;
-    }
-
-        table.table-bordered > tbody > tr > td{
-        border:1px solid grey;
-    }
             label{
             color:white;
             font-family: 'QuickSand';
@@ -69,9 +61,10 @@
             try {
                 var table = document.getElementById(tableID);
                 var rowCount = table.rows.length;
+                var colcnt = document.getElementById(tableID).rows[0].cells.length
                 for (var i = 0; i < rowCount; i++) {
                     var row = table.rows[i];
-                    var chkbox = row.cells[3].childNodes[0];
+                    var chkbox = row.cells[colcnt-1].childNodes[0];
                     if (null != chkbox && true === chkbox.checked) {
                         if (rowCount <= 2) {
                             alert("Cannot delete all the rows.");
@@ -99,7 +92,7 @@
     </script>
     <form action="" method="post" id="form" class="container-fluid">
         <label id="1" for="skillsTable"><h4>Skills Present:</h4></label>
-        <table id="skillsTable" class="table table-striped table-bordered table-hover">
+        <table id="skillsTable" class="table table-hover shadow-lg p-4 mb-4 bg-white">
             <thead>
                 <tr>
                   <th scope="col" style="width: 330px;"><h5>Skills</h5></th>
@@ -134,7 +127,7 @@
         <br>
         <label for="dataTable"><h4>Update Skills:</h4></label>
         <div style="height:180px;overflow:auto;">
-            <table id="dataTable" class="table table-striped table-bordered">
+            <table id="dataTable" class="table table-hover shadow-lg p-4 mb-4 bg-white">
             <thead>
                 <tr>
                   <th scope="col"><h5>Skills</h5></th>
@@ -179,12 +172,12 @@
         </table>
         </div>
         <br>
-        <input type="button" class="btn btn-light" value="Add Skill" onclick="addRow('dataTable')" style="margin-right:3px;">
-        <input type="button" class="btn btn-light" value="Delete Skill" onclick="deleteRow('dataTable')">
+        <input type="button" class="btn btn-light" value="Add Skill" onclick="addRow('dataTable')" style="margin-right:3px;font-family: Cairo">
+        <input type="button" class="btn btn-light" value="Delete Skill" onclick="deleteRow('dataTable')" style="font-family: Cairo">
         <br><br>
     </form>
 <!--    <button type="submit" form="form" value="Submit" id="button">Submit</button>-->
-    <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;" type="submit" class="btn btn-light"  data-toggle="modal" data-target="#exampleModal">Submit</button>
+    <button style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;font-family: Cairo" type="submit" class="btn btn-light"  data-toggle="modal" data-target="#exampleModal">Submit</button>
     <br>
 
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">

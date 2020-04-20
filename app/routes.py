@@ -98,7 +98,8 @@ def search():
                 for i in u:
                     final_res.append((i, 0))
                     print(final_res)
-                return render_template('search.html', title='Search', result=final_res, s=sk)
+                return render_template('search.html', title='Search', result=final_res, s=sk, vals=list(data.values()),
+                                       len=len(t))
         for p in t:
             rating = {}
             for i in z:
@@ -106,12 +107,16 @@ def search():
                 print(x)
                 if x.manager_rating is not None:
                     print("test : ", x.skill_id)
-                    if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (0.4*x.emp_rating + 0.6*x.manager_rating) >= int(data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
+                    if x.skill == data['skills' + p] and x.skill_exp >= int(data['experience' + p]) and (
+                            0.4 * x.emp_rating + 0.6 * x.manager_rating) >= int(
+                            data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
                         print(x.skill_id)
-                        rating.update({x.employee_id: (x.emp_rating + x.manager_rating) / 2})
+                        rating.update(
+                            {x.employee_id: ((0.4 * x.emp_rating + 0.6 * x.manager_rating), x.skill_interest)})
                 else:
                     if x.skill == data['skills' + p] and x.skill_exp >= int(
-                            data['experience' + p]) and x.emp_rating >= int(data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
+                            data['experience' + p]) and x.emp_rating >= int(
+                        data['rating' + p]) and x.skill_interest >= int(data['interest' + p]):
                         rating.update({x.employee_id: (x.emp_rating, x.skill_interest)})
                         flag.append(x.employee_id)
             ratings_all.append(rating)
@@ -140,13 +145,12 @@ def search():
                 if i == j:
                     y = 1
                     break
-            final_res.append((x, y, i_avg, r_avg))
+            final_res.append((x, y, round(i_avg, 2), round(r_avg, 2)))
         print(final_res)
         final_res.sort(key=lambda x: float(x[2]), reverse=True)
         print(final_res)
-        return render_template('search.html', result=final_res, s=sk)
-    return render_template('search.html', s=sk)
-
+        return render_template('search.html', result=final_res, s=sk, vals=list(data.values()), len=len(t))
+    return render_template('search.html', s=sk, vals=["any", 0, 0, 1], len=1)
 
 @app.route('/manager_rating', methods=['GET', 'POST'])
 def manager_rating():
@@ -191,56 +195,92 @@ def manager_rating():
 
 @app.route('/edit_profile', methods=['GET', 'POST'])
 def edit_profile():
-    username = db.session.query(Users.username).filter_by(id=current_user.id).first()
-    location = db.session.query(Users.location).filter_by(id=current_user.id).first()
-    print(username, location)
+    user = Users.query.filter_by(id=current_user.id).first()
+    loc = LookupTable.query.filter_by(field="location").all()
     if request.method == 'POST':
-        u = Users.query.filter_by(id=current_user.id).first()
-        new_name = request.form.get('username')
-        new_pass = request.form.get('confirm_pw')
-        print(new_name, new_pass)
-        u.username = new_name
-        u.set_password(new_pass)
-        db.session.commit()
-        return redirect('dashboard')
-    return render_template('edit_profile.html', name=username[0], loc=location[0])
+        data = dict(request.form)
+        print(data)
+        if data["flag"] == "details":
+            user.location = data["location"]
+            user.overall_exp = data["exp"]
+            db.session.commit()
+            return render_template('edit_profile.html', user=user, l=loc)
+        else:
+            user.set_password(data["password"])
+            db.session.commit()
+            return render_template('edit_profile.html', user=user, l=loc)
+    return render_template('edit_profile.html', user=user, l=loc)
 
 
-@app.route('/overall_statistics')
+@app.route('/overall_statistics', methods=['GET', 'POST'])
 def overall_stats():
+    if current_user.admin == 'Y':
+        q = Users.query.filter_by(admin='N').all()
+    else:
+        q = Users.query.filter_by(manager_id=current_user.id).all()
+    ################
+    skills_table = LookupTable.query.filter_by(field="skill").all()
+    users = Users.query.filter_by(admin='N').all()
+    final_res = []
+    for i in users:
+        user_res = []
+        print("---------new---------")
+        for j in skills_table:
+            a = db.session.query(db.func.max(Skills.skill_id)).group_by(Skills.skill, Skills.employee_id).filter(
+                Skills.employee_id == i.id, Skills.skill == j.value).first()
+            if a is not None:
+                skill1 = Skills.query.filter_by(skill_id=a[0]).first()
+                print(skill1)
+                if skill1.manager_rating is not None:
+                    user_res.append(
+                        (round(0.4 * skill1.emp_rating + 0.6 * skill1.manager_rating, 2), skill1.skill_interest, 0))
+                else:
+                    user_res.append((skill1.emp_rating, skill1.skill_interest, 1))
+            else:
+                user_res.append(None)
+        final_res.append(user_res)
+        print(final_res)
+    ################
     x = db.session.query(Skills.skill, db.func.count(Skills.employee_id.distinct())).group_by(Skills.skill).all()
-    print(x)
-    data = [['Tech', 'No. of ppl']]
+    y = db.session.query(Users.location, db.func.count(Users.id)).group_by(Users.location).all()
+    z = db.session.query(Users.practice, db.func.count(Users.id)).group_by(Users.practice).all()
+    print(x, y, z)
+    skills = [['Tech', 'No. of ppl']]
+    loc = [['Location', 'No. of ppl']]
+    prac = [['Practice', 'No. of ppl']]
     for i in x:
-        data.append([i[0], i[1]])
-    print(data)
-    y = db.session.query(Skills.skill, db.func.count(Skills.employee_id.distinct())).group_by(Skills.skill).all()
-    print(y)
-    data1 = [
-        ['Year', 'Python', 'Java', 'HTML'],
-        ['2014', 4.5, 3.9, 4.2],
-        ['2015', 4.5, 3.7, 4.3],
-        ['2016', 3.9, 4.0, 4.4],
-        ['2017', 3.9, 3.8, 4.5]
-    ]
-    loc = [['Task', 'Hours per Day'],
-           ['Work', 11],
-           ['Eat', 2],
-           ['Commute', 2],
-           ['Watch TV', 2],
-           ['Sleep', 7]]
-
-    prac = [
-        ["Element", "Density", { 'role': "style" } ],
-        ["Copper", 8.94, "#b87333"],
-        ["Silver", 10.49, "silver"],
-        ["Gold", 19.30, "gold"],
-        ["Platinum", 21.45, "color: #e5e4e2"]
-      ]
-    print(json.dumps(data1))
-    return render_template('overall_stats.html', data=json.dumps(data), data1=json.dumps(data1), loc=json.dumps(loc),
-                           prac=json.dumps(prac))
-
+        skills.append([i[0], i[1]])
+    for i in y:
+        if i[0] is not None:
+            loc.append([i[0], i[1]])
+    for i in z:
+        if i[0] is not None:
+            prac.append([i[0], i[1]])
+    print(skills, loc, prac)
+    s = LookupTable.query.filter_by(field="skill").all()
+    t = db.session.query(extract('year', Skills.timestamp), extract('month', Skills.timestamp),
+                         extract('day', Skills.timestamp)).order_by(Skills.skill_id).all()
+    res = [['time']]
+    for i in s:
+        res[0].append(i.value)
+    print(res)
+    dates = list(dict.fromkeys(t))
+    print(s)
+    print(dates)
+    for i in range(0, len(dates)):
+        res.append([dates[i]])
+        for j in s:
+            sk = db.session.query(Skills.employee_id.distinct()).filter(extract('year', Skills.timestamp)<=dates[i][0], extract('month', Skills.timestamp)<=dates[i][1],
+                             extract('day', Skills.timestamp)<=dates[i][2], Skills.skill==j.value).all()
+            res[i+1].append(len(sk))
+            print(res)
+            print(sk)
+    print(res)
+    if request.method == 'POST':
+        id = request.form.get('choose_employee')
+        return redirect(url_for('emp_stats', id=id))
+    return render_template('overall_stats.html', skills=json.dumps(skills), loc=json.dumps(loc), data=json.dumps(res),
+                           prac=json.dumps(prac), emp=q, skills_table=skills_table, skills_len=len(skills_table), res=final_res, users=users, len=len(users))
 
 @app.route('/emp_stats/<string:id>', methods=['GET', 'POST'])
 def emp_stats(id):
@@ -249,6 +289,9 @@ def emp_stats(id):
     t = db.session.query(extract('year', Skills.timestamp), extract('month', Skills.timestamp),
                          extract('day', Skills.timestamp), Skills.skill, Skills.emp_rating, Skills.manager_rating).filter_by(
         employee_id=id).order_by(Skills.skill_id).all()
+    name = db.session.query(Users.username).filter_by(id=id).all()
+    name = name[0]
+    print(name)
     res = [['time']]
     for i in d:
         res[0].append(i[0])
@@ -271,7 +314,7 @@ def emp_stats(id):
         if res[i][0] != res[i + 1][0]:
             final_res.append(res[i])
     print(final_res)
-    return render_template('emp_stat.html', data=json.dumps(final_res))
+    return render_template('emp_stat.html', data=json.dumps(final_res), name=name[0])
 
 
 @app.route('/new_employee', methods=['GET', 'POST'])
@@ -282,10 +325,10 @@ def new_employee():
     if request.method == 'POST':
         details = dict(request.form)
         print(details)
-        e = Users(id=details['id'], username=details['username'], email=details['mail'], location=details['location'],
-                  practice=details['practice'], manager_id=details['manager_id'])
-        e.set_password('1234')
-        db.session.add(e)
+        x = Users(id=details['id'], username=details['username'], email=details['mail'], location=details['location'],
+                  practice=details['practice'], manager_id=details['manager_id'], overall_exp=details['exp'])
+        x.set_password('1234')
+        db.session.add(x)
         db.session.commit()
         return render_template('new_employee.html', emp=e, l=loc, p=pra)
     return render_template('new_employee.html', emp=e, l=loc, p=pra)

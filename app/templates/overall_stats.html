@@ -1,10 +1,119 @@
 {% extends "base.html" %}
 
 {% block content %}
+<link href="https://fonts.googleapis.com/css2?family=Heebo&family=Noto+Sans+HK&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+      integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 <style>
     body{
-        background-image: url("static/res/overall_stats.png");
+        background-image: url("static/res/overall.svg");
     }
+
+    #abc{
+    background-image: url("static/res/bg5.png");
+        border-radius: 12px;
+    }
+
+    .table-fill {
+  background: white;
+  border-collapse: collapse;
+  height: 220px;
+  margin: auto;
+  padding: 2px;
+  width: 80%;
+  box-shadow: 0 5px 5px rgba(0, 0, 0, 0.1);
+  animation: float 5s infinite;
+}
+
+th {
+  color:#D5DDE5;;
+  background:#1b1e24;
+  border-right: 1px solid white;
+  font-size: medium;
+  font-weight: 100;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  text-align: center;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.1);
+  vertical-align:middle;
+}
+
+th:first-child {
+  border-top-left-radius:2px;
+}
+
+th:last-child {
+  border-top-right-radius:2px;
+  border-right:none;
+}
+
+tr {
+  border-top: 1px solid #C1C3D1;
+  color: black;
+  font-size:10px;
+  text-shadow: black;
+}
+
+tr:hover td {
+  background:#4E5066;
+  color:#FFFFFF;
+  border-top: 1px solid #22262e;
+
+}
+
+tr:first-child {
+  border-top:none;
+
+}
+
+tr:last-child {
+  border-bottom:none;
+
+}
+
+tr:nth-child(odd) td {
+  background:#EBEBEB;
+}
+
+tr:nth-child(odd):hover td {
+  background:#4E5066;
+}
+
+tr:last-child td:first-child {
+  border-bottom-left-radius:3px;
+
+}
+
+tr:last-child td:last-child {
+  border-bottom-right-radius:3px;
+}
+
+td {
+  background:#FFFFFF;
+  text-align:center;
+  vertical-align:middle;
+  font-weight:100;
+  font-size:15px;
+  text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #C1C3D1;
+}
+
+td:last-child {
+  border-right: 0px;
+
+}
+
+
+th.text-center {
+  text-align: center;
+
+}
+
+
+td.text-center {
+  text-align: center;
+}
+
 </style>
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -12,14 +121,39 @@
       google.charts.setOnLoadCallback(drawChart);
       google.charts.setOnLoadCallback(drawChart1);
       google.charts.setOnLoadCallback(drawChart2);
-      function drawChart() {
-        var data = google.visualization.arrayToDataTable({{data|safe}});
+      google.charts.setOnLoadCallback(drawChart3);
+     function drawChart() {
+        var data = google.visualization.arrayToDataTable({{skills|safe}});
         var options = {
             is3D : true,
             backgroundColor: 'none',
             fontFamily:'Cario',
             fillOpacity:0.5,
-            areaOpacity:0.1
+            areaOpacity:0.1,
+              hAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
+
+          vAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
+
+         legend: {
+                    textStyle: {
+                        color: 'white',
+                        fontFamily: 'Quicksand'
+                    }
+                }
         };
         var chart = new google.visualization.PieChart(document.getElementById('piechart'));
         chart.draw(data, options);
@@ -29,65 +163,12 @@
          var data = google.visualization.arrayToDataTable({{ loc|safe }});
 
          var options = {
-          title: 'Locations',
-          pieHole: 0.4,
+          pieHole: 0.3,
             backgroundColor: 'none',
             fontFamily:'Cario',
             fillOpacity:0.5,
-            areaOpacity:0.1
-        };
-
-
-        var chart = new google.visualization.PieChart(document.getElementById('donutchart'));
-        chart.draw(data, options);
-      }
-
-    //  Practices
-        function drawChart2() {
-      var data = google.visualization.arrayToDataTable({{prac|safe}});
-
-      var view = new google.visualization.DataView(data);
-      view.setColumns([0, 1,
-                       { calc: "stringify",
-                         sourceColumn: 1,
-                         type: "string",
-                         role: "annotation" },
-                       2]);
-
-      var options = {
-        title: "Practices",
-        width: 600,
-        height: 400,
-        bar: {groupWidth: "95%"},
-        legend: { position: "none" },
-          backgroundColor: 'none',
-            fontFamily:'Cario',
-            fillOpacity:0.5,
-            areaOpacity:0.1
-      };
-      var chart = new google.visualization.BarChart(document.getElementById("barchart_values"));
-      chart.draw(view, options);
-  }
-
-    </script>
-
-<!--    Manager and his/her Employees-->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-     <script type="text/javascript">
-       google.charts.load('current', {'packages':['bar']});
-       google.charts.setOnLoadCallback(drawChart);
-
-       function drawChart() {
-         var data = google.visualization.arrayToDataTable({{ data1|safe }});
-
-
-     var options = {
-          chart: {
-            title: 'Manager and his/her Employees'
-          },
-         backgroundColor: 'none',
-
-          hAxis: {
+            areaOpacity:0.1,
+             hAxis: {
                     textStyle: {
                                 color: 'white'
                                 },
@@ -110,26 +191,222 @@
                         color: 'white'
                     }
                 }
+
+        };
+
+
+        var chart = new google.visualization.PieChart(document.getElementById('loc_donutchart'));
+        chart.draw(data, options);
+      }
+
+    //  Practices
+      function drawChart2() {
+         var data = google.visualization.arrayToDataTable({{ prac|safe }});
+
+         var options = {
+          pieHole: 0.4,
+            backgroundColor: 'none',
+            fontFamily:'Quicksand',
+            fillOpacity:0.5,
+            areaOpacity:0.1,
+             hAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
+
+          vAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
+
+         legend: {
+                    textStyle: {
+                        color: 'white',
+                        fontFamily: 'Quicksand'
+                    }
+                }
+
+        };
+
+
+        var chart = new google.visualization.PieChart(document.getElementById('prac_donutchart'));
+        chart.draw(data, options);
+      }
+
+   // whole company skills performance
+      function drawChart3() {
+        var stats = {{data|safe}}
+        console.log(stats)
+        for (i = 1; i < stats.length; i++) {
+          stats[i][0] = new Date(stats[i][0])
         }
+        console.log(stats)
+        var dt = google.visualization.arrayToDataTable(stats)
+        var options = {
+          backgroundColor: 'none',
+            hAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
 
-        var chart = new google.charts.Bar(document.getElementById('columnchart_material'));
-        chart.draw(data, google.charts.Bar.convertOptions(options));
-      };
-     </script>
+          vAxis: {
+                    textStyle: {
+                                color: 'white'
+                                },
+                    titleTextStyle: {
+                        color: 'white'
+                    }
+                },
 
+         legend: {
+                    textStyle: {
+                        color: 'white',
+                        fontFamily: 'Quicksand'
+                    },
+             position: 'bottom'
+                }
 
+        };
+
+        var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
+
+        chart.draw(dt, options);
+      }
+    </script>
     <div class="container-fluid">
-        <div style="padding-left: 110px;font-family: QuickSand;color: white"><h3>People in technology</h3></div>
         <div class="row">
-            <div class="col" id="piechart" style="width: 400px; height: 400px;"></div>
-            <div class="col" id="columnchart_material" style="width: 400px; height: 400px;padding-right: 90px;"></div>
+            <section id="tabs" class="col">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xs-12 ">
+				<nav>
+					<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+                        <a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" style="width: 617px;color: black"><h5 style="font-family: Rubik">Employee Stats</h5></a>
+                        <a class="nav-item nav-link" id="nav-skill-tab" data-toggle="tab" href="#nav-skill"  role="tab" aria-controls="nav-skill" aria-selected="false"  style="width: 616px;color: black"><h5 style="font-family: Rubik">Skill Matrix</h5></a>
+					</div>
+				</nav>
+
+				<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+
+                        <div class="card bg-dark text-white" style="height: 210px;">
+                          <img class="card-img" src="../static/res/card6.png" alt="Card image" style="height: 210px;">
+                          <div class="card-img-overlay">
+                            <h5 class="card-title">Team Stats</h5>
+
+                            <p class="card-text">To view the stats of your team member :</p>
+                              <form id="form" action="" method="post">
+                                <select class="custom-select my-1 mr-sm-2" id="choose_employee" name="choose_employee" style="width: 200px;">
+                                    {% for i in emp %}
+                                         <option value={{i.id}}>{{ i.id }} - {{ i.username }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" form="form" value="Draw Chart" name="flag" class="btn btn-primary">select</button>
+                              </form>
+                          </div>
+                        </div>
+					</div>
+
+
+                    <div class="tab-pane fade" id="nav-skill" role="tabpanel" aria-labelledby="nav-skill-tab">
+                        <table id="table" class="table-fill">
+                          <col>
+                          <colgroup span="2"></colgroup>
+                          <colgroup span="2"></colgroup>
+                          <tr>
+                            <td rowspan="2"  class="text-center"></td>
+                            {% for i in skills_table %}
+                              <th colspan="2" scope="colgroup">{{ i.value }}</th>
+                            {% endfor %}
+                          </tr>
+                          <tr>
+                            {% for i in range(0,skills_len) %}
+                              <th scope="col">Rating</th>
+                              <th scope="col">Interest</th>
+                            {% endfor %}
+                          </tr>
+                          {% for i in range(0,len) %}
+                            <tr>
+                              <th scope="row">{{ users[i].username }}</th>
+                              {% for j in res[i] %}
+                                {% if j is not none %}
+                                  {% if j[2] == 1 %}
+                                    <td>{{ j[0] }}  ( <a href="#" style="color: red" data-toggle="popover" title="Manager didn't yet rate his skills" data-content="Manager didn't yet rate his skills"><span>&#33;</span></a> )</td>
+                                  {% else %}
+                                    <td>{{ j[0] }}</td>
+                                  {% endif %}
+                                  <td>{{ j[1] }}</td>
+                                {% else %}
+                                  <td colspan="2" scope="colgroup"> -- </td>
+                                {% endif %}
+                              {% endfor %}
+                            </tr>
+                          {% endfor %}
+                        </table>
+                      <br>
+                    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
         </div>
         <br>
         <div class="row">
-            <div class="col" id="donutchart" style="width: 600px; height: 500px;"></div>
-            <div class="col" id="barchart_values" style="width: 900px; height: 300px;"></div>
-        </div>
-    </div>
+            <div class="col">
+                <div class="card text-white shadow-lg mb-4 bg-white" style="height: 310px;">
+              <img class="card-img" src="../static/res/bg5.png" alt="Card image" style="height: 308px;">
+              <div class="card-img-overlay">
+                <h5 class="card-title">People spread across <u>Practices.</u></h5>
+                  <div class="col" id="prac_donutchart" style="width: 600px; height: 200px;"></div>
+              </div>
+            </div>
+            </div>
 
+            <div class="col">
+                <div class="card text-white shadow-lg mb-4 bg-white" style="height: 310px;">
+              <img class="card-img" src="../static/res/bg5.png" alt="Card image" style="height: 308px;">
+              <div class="card-img-overlay">
+                <h5 class="card-title">People spread across <u>Technologies.</u></h5>
+                  <div class="col" id="piechart" style="width: 600px; height: 200px;"></div>
+              </div>
+            </div>
+            </div>
+
+            <div class="col">
+                <div class="card text-white shadow-lg mb-4 bg-white" style="height: 310px;">
+              <img class="card-img" src="../static/res/bg5.png" alt="Card image" style="height: 308px;">
+              <div class="card-img-overlay">
+                <h5 class="card-title">People spread across <u>Locations.</u> </h5>
+                  <div class="col" id="loc_donutchart" style="width: 600px; height: 200px;"></div>
+              </div>
+            </div>
+            </div>
+
+        </div>
+        <div class="container-fluid shadow-lg mb-4 bg-white" id="abc">
+        <br>
+        <p><h4 style="color: white;margin-left: 180px;">Number of People across each Technology over time</h4></p>
+        <div id="curve_chart" style="width: 100%; height: 500px;"></div>
+        </div>
+
+    </div>
+	</div>
+	<br>
+</div>
+
+<br>
 
 {% endblock %}

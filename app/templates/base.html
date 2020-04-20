@@ -1,5 +1,6 @@
 <html>
     <head>
+        <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@300&display=swap" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" rel="stylesheet">
         {% if title %}
         <title>{{ title }} - Skill Inventory</title>
@@ -21,12 +22,11 @@
     </head>
     <body>
         <nav class="navbar">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-light" role="button" aria-pressed="true">Dashboard</a>
+            <a href="{{ url_for('dashboard') }}" class="btn btn-light shadow-sm mb-5 bg-white rounded" role="button" aria-pressed="true" style="font-family: Cairo">Dashboard</a>
             {% if not current_user.is_anonymous %}
-                <a href="{{ url_for('logout') }}" class="btn btn-light" role="button" aria-pressed="true">Logout</a>
+                <a href="{{ url_for('logout') }}" class="btn btn-light shadow-sm mb-5 bg-white rounded" role="button" aria-pressed="true" style="font-family: Cairo">Logout</a>
             {% endif %}
         </nav>
-        <br>
             {% with messages = get_flashed_messages() %}
             {% if messages %}
             <ul>

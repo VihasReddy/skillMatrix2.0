@@ -13,13 +13,14 @@
         font-family: QuickSand;
     }
 
-    tbody{
-        background-color: gainsboro;
+    #dataTable{
+        background-image:  url('static/res/bg.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
     }
 
 </style>
    <form action="{{ url_for('manager_rating') }}" method="post" id="form" class="container-fluid">
-       <br>
        <label for="choose_employee"><h4>Update your rating for :</h4></label>
        <br>
             <select class="custom-select my-1 mr-sm-2" id="choose_employee" name="choose_employee" style="width: 200px;">
@@ -31,8 +32,8 @@
 <!--        <button type="submit" form="form" >Select</button>-->
        <br><br>
        {% if flag == 1 %}
-       <table id="dataTable" class="table table-striped">
-            <thead class="thead-light">
+       <table id="dataTable" class="table table-hover rounded shadow-lg p-4 mb-4 bg-white">
+            <thead>
                 <tr>
                   <th scope="col">Updated Time</th>
                   <th scope="col">Employee Name</th>
@@ -67,7 +68,28 @@
             {% endfor %}
             </tbody>
         </table>
-        <button type="submit" form="form" value="Submit" name="flag" class="btn btn-primary" style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;">Submit</button>
-       {% endif %}
     </form>
+     <button type="submit"  data-toggle="modal" data-target="#exampleModal" name="flag" class="btn btn-light" style="margin-left:auto;margin-right:auto;display:block;padding-top: 5px;">Submit</button>
+    <br>
+    {% endif %}
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Confirmation message</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <p>Are you sure about the changes?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary" form="form" value="Submit" id="button" name="flag">Save changes</button>
+          </div>
+        </div>
+      </div>
+    </div>
 {% endblock %}

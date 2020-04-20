@@ -5,49 +5,140 @@
         body{
             background-image: url("static/res/edit_pro.png");
             font-family: 'Cairo', sans-serif;
+            background-size: cover;
+            background-repeat: no-repeat;
         }
     </style>
-    <div class="container-fluid" style="padding-left: 30px;">
-        <form action="" method="post" id="form">
 
-            <div class="form-group">
-                <label for="username">Edit your username : </label>
-                <input type="text" class="form-control" name="username" id="username" value={{name}} style="width: 25%;" disabled>
-            </div>
+<section id="tabs">
+	<div class="container">
+		<div class="row">
+			<div class="col-xs-12 ">
+				<nav>
+					<div class="nav nav-tabs nav-fill" id="nav-tab" role="tablist">
+						<a class="nav-item nav-link active" id="nav-home-tab" data-toggle="tab" href="#nav-home" role="tab" aria-controls="nav-home" aria-selected="true" style="width: 570px;"><h5 style="font-family: Rubik">Edit Fields</h5></a>
+						<a class="nav-item nav-link" id="nav-profile-tab" data-toggle="tab" href="#nav-profile" role="tab" aria-controls="nav-profile" aria-selected="false" style="width: 570px;"><h5 style="font-family: Rubik">Change Password</h5></a>
+					</div>
+				</nav>
 
 
-            <div class="form-group">
-                <label for="username">Edit your location : </label>
-                <input type="text" class="form-control" name="username" id="location" value={{loc}} style="width: 25%;">
-            </div>
+				<div class="tab-content py-3 px-3 px-sm-0" id="nav-tabContent">
+<!--                     left side nav tab-->
+					<div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+                        <div class="container-fluid">
+                            <form action="" method="post" id="form">
+                                <div class="form-group">
+                                    <label for="id">ID : </label>
+                                    <input type="text" class="form-control" name="id" id="id" value={{user.id}} style="width: 25%;" disabled>
+                                </div>
 
-    <script>
-        var check = function() {
-          if (document.getElementById('password').value ==
-            document.getElementById('confirm_password').value) {
-            document.getElementById('message').style.color = 'green';
-            document.getElementById('message').innerHTML = 'matching';
-          } else {
-            document.getElementById('message').style.color = 'red';
-            document.getElementById('message').innerHTML = 'not matching';
-          }
-        }
-    </script>
+                                <div class="form-group">
+                                    <label for="username">Username : </label>
+                                    <input type="text" class="form-control" name="username" id="username" value='{{user.username}}' style="width: 25%;" disabled>
+                                </div>
 
-             <div class="form-group">
-                <label for="password">Set New password : </label>
-                <input type="password" class="form-control" name="password" id="password" onkeyup='check();' style="width: 25%;">
-            </div>
+                                <div class="form-group">
+                                    <label for="username">Current Practice : </label>
+                                    <input type="text" class="form-control" name="practice" id="practice" value='{{user.practice}}' style="width: 25%;" disabled>
+                                </div>
 
-            <div class="form-group">
-                <label for="confirm_password">Confirm New password: </label>
-              <input type="password" class="form-control" name="confirm_password" id="confirm_password" onkeyup='check();' style="width: 25%;">
-            </div>
-            <span id='message'></span>
+                                <div class="form-group">
+                                    <label for="username">Edit your location : </label>
+                                        <select class='form-control' id="location" name="location" style="width: 25%">
+                                                        <option value={{user.location}} selected>{{user.location}}</option>
+                                                        {% for i in l %}
+                                                        <option value='{{ i.value }}'>{{i.value}}</option>
+                                                        {% endfor %}
+                                        </select>
+                                </div>
 
-            <br>
-            <button style="margin-left: 105px;" type="submit" class="btn btn-primary" form="form" value="Submit" id="button">Submit</button>
-            <br>
-        </form>
-    </div>
+                                <div class="form-group">
+                                    <label for="username">Edit your Industry Experience(in years) : </label>
+                                    <input type="text" class="form-control" name="exp" id="exp" value={{user.overall_exp}} style="width: 25%;">
+                                </div>
+
+                            </form>
+                            <button style="margin-left: 95px;" type="submit" class="btn btn-primary"   data-toggle="modal" data-target="#exampleModalTech" name="flag" >Submit</button>
+                            <div class="modal fade" id="exampleModalTech" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabelTech" aria-hidden="true">
+                              <div class="modal-dialog" role="document">
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabelTech">Confirmation message</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                      <span aria-hidden="true">&times;</span>
+                                    </button>
+                                  </div>
+                                  <div class="modal-body">
+                                    <p>Are you sure about the changes?</p>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                    <button type="submit" class="btn btn-primary" form="form" value="details" id="button" name="flag">Save changes</button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+
+                        </div>
+					</div>
+
+<!--                     Right side nav tab-->
+					<div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+					    <form action="" method="post" id="pass_form">
+                            <div class="container-fluid">
+                                <script>
+                                    var check = function() {
+                                      if (document.getElementById('password').value == document.getElementById('confirm_password').value) {
+                                        document.getElementById('message').style.color = 'green';
+                                        document.getElementById('message').innerHTML = 'matching';
+                                      } else {
+                                        document.getElementById('message').style.color = 'red';
+                                        document.getElementById('message').innerHTML = 'not matching';
+                                      }
+                                    }
+                                </script>
+
+                                <div class="form-group">
+                                    <label for="password">Set New password : </label>
+                                    <input type="password" class="form-control" name="password" id="password" onkeyup='check();' style="width: 25%;">
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="confirm_password">Confirm New password: </label>
+                                  <input type="password" class="form-control" name="confirm_password" id="confirm_password" onkeyup='check();' style="width: 25%;">
+                                </div>
+                                <span id='message'></span>
+
+                            </div>
+                        </form>
+                        <button style="margin-left: 97px;" type="submit" class="btn btn-primary"   data-toggle="modal" data-target="#exampleModal" name="flag" >Submit</button>
+
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLabel">Confirmation message</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                <p>Are you sure about the changes?</p>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                <button type="submit" class="btn btn-primary" form="pass_form" value="pass" id="button_pass" name="flag">Save changes</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+
+                    </div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</section>
 {% endblock %}
